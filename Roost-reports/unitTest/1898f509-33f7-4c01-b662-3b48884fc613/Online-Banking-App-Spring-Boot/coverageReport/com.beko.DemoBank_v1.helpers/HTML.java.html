@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HTML.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">DemoBank_v1</a> &gt; <a href="index.source.html" class="el_package">com.beko.DemoBank_v1.helpers</a> &gt; <span class="el_source">HTML.java</span></div><h1>HTML.java</h1><pre class="source lang-java linenums">package com.beko.DemoBank_v1.helpers;
+
+<span class="nc" id="L3">public class HTML {</span>
+
+	public static String htmlEmailTemplate(String token, String code) {
+<span class="nc" id="L6">		String url = &quot;http://127.0.0.1:8070/verify?token=&quot; + token + &quot;&amp;code=&quot; + code;</span>
+<span class="nc" id="L7">		String emailTemplate = &quot;&lt;html&gt;&lt;body&gt;&quot; + &quot;&lt;h1&gt;Hos Geldiniz!&lt;/h1&gt;&quot;</span>
+				+ &quot;&lt;p&gt;Lütfen hesabinizi doğrulamak icin aşagidaki baglantiya tiklayin:&lt;/p&gt;&quot; + &quot;&lt;a href='&quot; + url
+				+ &quot;'&gt;Hesabinizi Doğrulayin&lt;/a&gt;&quot; + &quot;&lt;/body&gt;&lt;/html&gt;&quot;;
+		;
+<span class="nc" id="L11">		return emailTemplate;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
