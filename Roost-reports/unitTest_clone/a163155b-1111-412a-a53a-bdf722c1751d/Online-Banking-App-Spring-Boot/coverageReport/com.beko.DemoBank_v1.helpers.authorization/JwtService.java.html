@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JwtService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">DemoBank_v1</a> &gt; <a href="index.source.html" class="el_package">com.beko.DemoBank_v1.helpers.authorization</a> &gt; <span class="el_source">JwtService.java</span></div><h1>JwtService.java</h1><pre class="source lang-java linenums">package com.beko.DemoBank_v1.helpers.authorization;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+
+import java.security.Key;
+import java.util.Date;
+
+@Service
+<span class="nc" id="L16">public class JwtService {</span>
+    // Güvenlik anahtarını oluşturun. Bu örnek için HMAC-SHA256 kullanılıyor.
+
+
+<span class="nc" id="L20">    private String appSecret = &quot;helloDarknessMyOldFriendIComeToTalkWithYouAgain&quot;;</span>
+
+
+
+<span class="nc" id="L24">    private long expiresIn = 604800;</span>
+
+
+    public String generateToken(String userEmail) {
+<span class="nc" id="L28">        Date now = new Date();</span>
+<span class="nc" id="L29">        Date expirationDate = new Date(now.getTime() + expiresIn);</span>
+
+<span class="nc" id="L31">        Key secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);</span>
+
+
+<span class="nc" id="L34">        return Jwts.builder()</span>
+<span class="nc" id="L35">                .setSubject(userEmail)</span>
+<span class="nc" id="L36">                .setIssuedAt(now)</span>
+<span class="nc" id="L37">                .setExpiration(expirationDate)</span>
+<span class="nc" id="L38">                .signWith(SignatureAlgorithm.HS256,appSecret)</span>
+<span class="nc" id="L39">                .compact();</span>
+
+    }
+
+    public Claims decodeToken(String token) {
+        try {
+<span class="nc" id="L45">            Jws&lt;Claims&gt; claimsJws = Jwts.parser()</span>
+<span class="nc" id="L46">                    .setSigningKey(appSecret)</span>
+<span class="nc" id="L47">                    .parseClaimsJws(token);</span>
+<span class="nc" id="L48">            return claimsJws.getBody();</span>
+<span class="nc" id="L49">        } catch (Exception e) {</span>
+<span class="nc" id="L50">            System.out.println(&quot;Token is not valid.&quot;);</span>
+<span class="nc" id="L51">            return null;</span>
+        }
+    }
+
+    public boolean isTokenIncluded(String req){
+<span class="nc bnc" id="L56" title="All 2 branches missed.">        if(req!=null)</span>
+<span class="nc" id="L57">            return true;</span>
+<span class="nc" id="L58">        return false;</span>
+    }
+
+    public String getAccessTokenFromHeader(String req){
+<span class="nc" id="L62">        String[] parts = req.split(&quot; &quot;);</span>
+<span class="nc" id="L63">        return parts[1];</span>
+    }
+
+
+
+
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
