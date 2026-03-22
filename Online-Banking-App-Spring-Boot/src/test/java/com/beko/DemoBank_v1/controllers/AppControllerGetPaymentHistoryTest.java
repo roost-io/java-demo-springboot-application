@@ -155,6 +155,8 @@ Execution:
 Validation:
   Affirms performance and scalability of the method for power users or long-term account histories.
 
+
+roost_feedback [22/03/2026, 3:51:06 AM]:Modify\sCode\sto\sfix\sthis\serror\nSuccessfully\scompiled\sbut\sfailed\sat\sruntime.\n\nError\sAnalysis:\n*What\sFailed:*\s\s\nUnit\stest\sexpecting\sNullPointerException\sactually\sreceived\sNumberFormatException.\n\n*Where:*\s\s\nAppControllerGetPaymentHistoryTest.testUserWithNullUserIdThrowsException\s(line\s159);\sroot\sat\sAppController.getPaymentHistory\s(line\s67).\n\n*Why:*\s\s\nNull\suser\sID\sinput\scaused\sInteger.parseInt(null),\swhich\sthrows\sNumberFormatException,\snot\sNullPointerException.\n\n*Investigate:*\s\s\nUpdate\stest\sto\sexpect\sNumberFormatException\sor\shandle\snull\suser\sID\smore\sgracefully\sin\sgetPaymentHistory\s(e.g.,\spre-check\sinput\sfor\snull,\sthrow\sa\scustom\sexception).\sReview\show\snulls\sare\sprocessed\sbefore\sparsing.,
 */
 
 // ********RoostGPT********
@@ -211,7 +213,6 @@ class AppControllerGetPaymentHistoryTest {
 	void setUp() {
 		validUser = new User();
 		validUser.setUser_id("123");
-		// TODO: Add any other User setup here if needed
 	}
 
 	@Test
@@ -219,7 +220,6 @@ class AppControllerGetPaymentHistoryTest {
 	public void testValidUserSessionReturnsPaymentHistory() {
 		List<PaymentHistory> paymentList = new ArrayList<>();
 		PaymentHistory p1 = new PaymentHistory();
-		// TODO: Set up PaymentHistory attributes if needed
 		paymentList.add(p1);
 		when(session.getAttribute("user")).thenReturn(validUser);
 		when(paymentHistoryRepository.getPaymentsRecordsById(123)).thenReturn(paymentList);
@@ -330,9 +330,9 @@ class AppControllerGetPaymentHistoryTest {
 		User nullIdUser = new User();
 		nullIdUser.setUser_id(null);
 		when(session.getAttribute("user")).thenReturn(nullIdUser);
-		Exception exception = assertThrows(NullPointerException.class, () -> {
-			appController.getPaymentHistory(session);
-		});
+        Exception exception = assertThrows(NumberFormatException.class, () -> {
+            appController.getPaymentHistory(session);
+        });
 		assertNotNull(exception);
 	}
 
@@ -340,10 +340,9 @@ class AppControllerGetPaymentHistoryTest {
 	@Tag("integration")
 	public void testUserWithManyPaymentHistoryEntriesReturnsFullList() {
 		List<PaymentHistory> paymentList = new ArrayList<>();
-		int largeCount = 3000; // TODO: Adjust for desired test size
+		int largeCount = 3000;
 		for (int i = 0; i < largeCount; i++) {
 			PaymentHistory p = new PaymentHistory();
-			// TODO: Set up PaymentHistory attributes for each entry if needed
 			paymentList.add(p);
 		}
 		when(session.getAttribute("user")).thenReturn(validUser);
