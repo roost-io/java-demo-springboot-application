@@ -1,5 +1,3 @@
-//This test file is marked invalid as it contains compilation errors. Change the extension to of this file to .java, to manually edit its contents
-
 
 // ********RoostGPT********
 /*
@@ -218,9 +216,12 @@ Execution:
 Validation:
   This assertion ensures proper audit trail creation for deposit transactions. It validates that all transaction details are accurately recorded, which is essential for compliance, debugging, and financial reconciliation processes.
 
+
+roost_feedback [22/03/2026, 3:09:17 PM]:Modify\sCode\sto\sfix\sthis\serror\n[222,57]\sno\ssuitable\smethod\sfound\sfor\sthenReturn(java.util.List<java.lang.String>)\n[300,57]\sno\ssuitable\smethod\sfound\sfor\sthenReturn(java.util.List<java.lang.String>)\n[323,57]\sno\ssuitable\smethod\sfound\sfor\sthenReturn(java.util.List<java.lang.String>)\n[345,57]\sno\ssuitable\smethod\sfound\sfor\sthenReturn(java.util.List<java.lang.String>)\n[411,57]\sno\ssuitable\smethod\sfound\sfor\sthenReturn(java.util.List<java.lang.String>)\n[431,57]\sno\ssuitable\smethod\sfound\sfor\sthenReturn(java.util.List<java.lang.String>)\n[454,57]\sno\ssuitable\smethod\sfound\sfor\sthenReturn(java.util.List<java.lang.String>)\n[470,57]\sno\ssuitable\smethod\sfound\sfor\sthenReturn(java.util.List<java.lang.String>)
 */
 
 // ********RoostGPT********
+
 package com.beko.DemoBank_v1.controllers;import com.beko.DemoBank_v1.models.User;
 import com.beko.DemoBank_v1.repository.AccountRepository;
 import com.beko.DemoBank_v1.repository.TransactRepository;
@@ -281,14 +282,14 @@ class TransactControllerDepositTest {
         when(session.getAttribute("user")).thenReturn(user);
         when(user.getUser_id()).thenReturn("123");
         when(accountRepository.getAccountBalance(123, 1)).thenReturn(500.0);
-        when(accountRepository.getUserAccountsById(123)).thenReturn(List.of("Account1", "Account2"));
+        when(accountRepository.getUserAccountsById(123)).thenReturn(mockAccounts);
         // Act
         ResponseEntity response = transactController.deposit(requestMap, session);
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
         assertEquals("Amount Deposited Successfully.", responseBody.get("message"));
-        assertEquals(List.of("Account1", "Account2"), responseBody.get("accounts"));
+        assertEquals(mockAccounts, responseBody.get("accounts"));
         
         verify(accountRepository).changeAccountsBalanceById(600.5, 1);
         verify(transactRepository).logTransaction(eq(1), eq("deposit"), eq(100.5), 
@@ -359,14 +360,14 @@ class TransactControllerDepositTest {
         when(session.getAttribute("user")).thenReturn(user);
         when(user.getUser_id()).thenReturn("456");
         when(accountRepository.getAccountBalance(456, 2)).thenReturn(1000.0);
-        when(accountRepository.getUserAccountsById(456)).thenReturn(List.of("Account1", "Account2"));
+        when(accountRepository.getUserAccountsById(456)).thenReturn(mockAccounts);
         // Act
         ResponseEntity response = transactController.deposit(requestMap, session);
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
         assertEquals("Amount Deposited Successfully.", responseBody.get("message"));
-        assertEquals(List.of("Account1", "Account2"), responseBody.get("accounts"));
+        assertEquals(mockAccounts, responseBody.get("accounts"));
         
         verify(accountRepository).changeAccountsBalanceById(1250.75, 2);
         verify(transactRepository).logTransaction(eq(2), eq("deposit"), eq(250.75), 
@@ -382,7 +383,7 @@ class TransactControllerDepositTest {
         when(session.getAttribute("user")).thenReturn(user);
         when(user.getUser_id()).thenReturn("789");
         when(accountRepository.getAccountBalance(789, 3)).thenReturn(0.01);
-        when(accountRepository.getUserAccountsById(789)).thenReturn(List.of("Account1", "Account2"));
+        when(accountRepository.getUserAccountsById(789)).thenReturn(mockAccounts);
         // Act
         ResponseEntity response = transactController.deposit(requestMap, session);
         // Assert
@@ -404,7 +405,7 @@ class TransactControllerDepositTest {
         when(session.getAttribute("user")).thenReturn(user);
         when(user.getUser_id()).thenReturn("101");
         when(accountRepository.getAccountBalance(101, 4)).thenReturn(74.33);
-        when(accountRepository.getUserAccountsById(101)).thenReturn(List.of("Account1", "Account2"));
+        when(accountRepository.getUserAccountsById(101)).thenReturn(mockAccounts);
         // Act
         ResponseEntity response = transactController.deposit(requestMap, session);
         // Assert
@@ -470,7 +471,7 @@ class TransactControllerDepositTest {
         when(session.getAttribute("user")).thenReturn(user);
         when(user.getUser_id()).thenReturn("202");
         when(accountRepository.getAccountBalance(202, 5)).thenReturn(300.75);
-        when(accountRepository.getUserAccountsById(202)).thenReturn(List.of("Account1", "Account2"));
+        when(accountRepository.getUserAccountsById(202)).thenReturn(mockAccounts);
         // Act
         transactController.deposit(requestMap, session);
         // Assert
@@ -490,7 +491,7 @@ class TransactControllerDepositTest {
         when(session.getAttribute("user")).thenReturn(user);
         when(user.getUser_id()).thenReturn("303");
         when(accountRepository.getAccountBalance(303, 6)).thenReturn(200.0);
-        when(accountRepository.getUserAccountsById(303)).thenReturn(List.of("Account1", "Account2"));
+        when(accountRepository.getUserAccountsById(303)).thenReturn(mockAccounts);
         // Act
         ResponseEntity response = transactController.deposit(requestMap, session);
         // Assert
@@ -501,7 +502,7 @@ class TransactControllerDepositTest {
         assertTrue(responseBody.containsKey("message"));
         assertTrue(responseBody.containsKey("accounts"));
         assertEquals("Amount Deposited Successfully.", responseBody.get("message"));
-        assertEquals(List.of("Account1", "Account2"), responseBody.get("accounts"));
+        assertEquals(mockAccounts, responseBody.get("accounts"));
     }
     @Test
     @Tag("valid")
@@ -513,7 +514,7 @@ class TransactControllerDepositTest {
         when(session.getAttribute("user")).thenReturn(user);
         when(user.getUser_id()).thenReturn("404");
         when(accountRepository.getAccountBalance(404, 7)).thenReturn(876.55);
-        when(accountRepository.getUserAccountsById(404)).thenReturn(List.of("Account1", "Account2"));
+        when(accountRepository.getUserAccountsById(404)).thenReturn(mockAccounts);
         // Act
         transactController.deposit(requestMap, session);
         // Assert
@@ -529,7 +530,7 @@ class TransactControllerDepositTest {
         when(session.getAttribute("user")).thenReturn(user);
         when(user.getUser_id()).thenReturn("505");
         when(accountRepository.getAccountBalance(505, 8)).thenReturn(950.0);
-        when(accountRepository.getUserAccountsById(505)).thenReturn(List.of("Account1", "Account2"));
+        when(accountRepository.getUserAccountsById(505)).thenReturn(mockAccounts);
         // Act
         transactController.deposit(requestMap, session);
         // Assert
