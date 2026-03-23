@@ -258,9 +258,12 @@ Execution:
 Validation:
   This comprehensive test validates the complete deposit workflow in a realistic scenario with existing account balance. It ensures that all components work together correctly and that the response includes all expected information for a successful deposit operation.
 
+
+roost_feedback [23/03/2026, 4:42:56 AM]:-\sImprove\svariable\snames
 */
 
 // ********RoostGPT********
+
 package com.beko.DemoBank_v1.controllers;
 
 import com.beko.DemoBank_v1.models.User;
@@ -298,366 +301,348 @@ import javax.servlet.http.HttpServletRequest;
 class TransactControllerDepositTest {
 
 	@Mock
-	private AccountRepository accountRepository;
+	private AccountRepository mockAccountRepository;
 
 	@Mock
-	private TransactRepository transactRepository;
+	private TransactRepository mockTransactRepository;
 
 	@Mock
-	private HttpSession session;
+	private HttpSession mockHttpSession;
 
 	@InjectMocks
 	private TransactController transactController;
 
-	private User user;
+	private User testUser;
 
-	private Map<String, String> requestMap;
+	private Map<String, String> depositRequestMap;
 
-	private List<Object> mockAccounts;
+	private List<Object> mockUserAccounts;
 
 	@BeforeEach
 	void setUp() {
-		user = new User();
-		user.setUser_id("123");
-		requestMap = new HashMap<>();
-		mockAccounts = List.of("Account1", "Account2");
+		testUser = new User();
+		testUser.setUser_id("123");
+		depositRequestMap = new HashMap<>();
+		mockUserAccounts = List.of("Account1", "Account2");
 	}
 
 	@Test
 	@Tag("valid")
 	void validDepositWithPositiveAmount() {
-		// Arrange
-		requestMap.put("deposit_amount", "100.0");
-		requestMap.put("account_id", "456");
+		depositRequestMap.put("deposit_amount", "100.0");
+		depositRequestMap.put("account_id", "456");
 
-		when(session.getAttribute("user")).thenReturn(user);
-		when(accountRepository.getAccountBalance(123, 456)).thenReturn(500.0);
-		when(accountRepository.getUserAccountsById(123)).thenReturn((List) mockAccounts);
-		// Act
-		ResponseEntity result = transactController.deposit(requestMap, session);
-		// Assert
-		assertEquals(HttpStatus.OK, result.getStatusCode());
-		Map<String, Object> responseBody = (Map<String, Object>) result.getBody();
+		when(mockHttpSession.getAttribute("user")).thenReturn(testUser);
+		when(mockAccountRepository.getAccountBalance(123, 456)).thenReturn(500.0);
+		when(mockAccountRepository.getUserAccountsById(123)).thenReturn((List) mockUserAccounts);
+
+		ResponseEntity actualResponse = transactController.deposit(depositRequestMap, mockHttpSession);
+
+		assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
+		Map<String, Object> responseBody = (Map<String, Object>) actualResponse.getBody();
 		assertEquals("Amount Deposited Successfully.", responseBody.get("message"));
-		assertEquals(mockAccounts, responseBody.get("accounts"));
+		assertEquals(mockUserAccounts, responseBody.get("accounts"));
 
-		verify(accountRepository).changeAccountsBalanceById(600.0, 456);
-		verify(transactRepository).logTransaction(eq(456), eq("deposit"), eq(100.0), eq("online"), eq("success"),
+		verify(mockAccountRepository).changeAccountsBalanceById(600.0, 456);
+		verify(mockTransactRepository).logTransaction(eq(456), eq("deposit"), eq(100.0), eq("online"), eq("success"),
 				eq("Deposit Transaction Successfull"), any(LocalDateTime.class));
 	}
 
 	@Test
 	@Tag("invalid")
 	void emptyDepositAmountParameter() {
-		// Arrange
-		requestMap.put("deposit_amount", "");
-		requestMap.put("account_id", "456");
-		// Act
-		ResponseEntity result = transactController.deposit(requestMap, session);
-		// Assert
-		assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
-		assertEquals("Deposit amount and account ID cannot be empty.", result.getBody());
+		depositRequestMap.put("deposit_amount", "");
+		depositRequestMap.put("account_id", "456");
 
-		verifyNoInteractions(accountRepository, transactRepository);
+		ResponseEntity actualResponse = transactController.deposit(depositRequestMap, mockHttpSession);
+
+		assertEquals(HttpStatus.BAD_REQUEST, actualResponse.getStatusCode());
+		assertEquals("Deposit amount and account ID cannot be empty.", actualResponse.getBody());
+
+		verifyNoInteractions(mockAccountRepository, mockTransactRepository);
 	}
 
 	@Test
 	@Tag("invalid")
 	void emptyAccountIdParameter() {
-		// Arrange
-		requestMap.put("deposit_amount", "100.0");
-		requestMap.put("account_id", "");
-		// Act
-		ResponseEntity result = transactController.deposit(requestMap, session);
-		// Assert
-		assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
-		assertEquals("Deposit amount and account ID cannot be empty.", result.getBody());
+		depositRequestMap.put("deposit_amount", "100.0");
+		depositRequestMap.put("account_id", "");
 
-		verifyNoInteractions(accountRepository, transactRepository);
+		ResponseEntity actualResponse = transactController.deposit(depositRequestMap, mockHttpSession);
+
+		assertEquals(HttpStatus.BAD_REQUEST, actualResponse.getStatusCode());
+		assertEquals("Deposit amount and account ID cannot be empty.", actualResponse.getBody());
+
+		verifyNoInteractions(mockAccountRepository, mockTransactRepository);
 	}
 
 	@Test
 	@Tag("invalid")
 	void bothDepositAmountAndAccountIdEmpty() {
-		// Arrange
-		requestMap.put("deposit_amount", "");
-		requestMap.put("account_id", "");
-		// Act
-		ResponseEntity result = transactController.deposit(requestMap, session);
-		// Assert
-		assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
-		assertEquals("Deposit amount and account ID cannot be empty.", result.getBody());
+		depositRequestMap.put("deposit_amount", "");
+		depositRequestMap.put("account_id", "");
 
-		verifyNoInteractions(accountRepository, transactRepository);
+		ResponseEntity actualResponse = transactController.deposit(depositRequestMap, mockHttpSession);
+
+		assertEquals(HttpStatus.BAD_REQUEST, actualResponse.getStatusCode());
+		assertEquals("Deposit amount and account ID cannot be empty.", actualResponse.getBody());
+
+		verifyNoInteractions(mockAccountRepository, mockTransactRepository);
 	}
 
 	@Test
 	@Tag("boundary")
 	void zeroDepositAmountValue() {
-		// Arrange
-		requestMap.put("deposit_amount", "0");
-		requestMap.put("account_id", "456");
+		depositRequestMap.put("deposit_amount", "0");
+		depositRequestMap.put("account_id", "456");
 
-		when(session.getAttribute("user")).thenReturn(user);
-		// Act
-		ResponseEntity result = transactController.deposit(requestMap, session);
-		// Assert
-		assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
-		assertEquals("Deposit amount cannot be zero.", result.getBody());
+		when(mockHttpSession.getAttribute("user")).thenReturn(testUser);
 
-		verify(accountRepository, never()).changeAccountsBalanceById(anyDouble(), anyInt());
-		verify(transactRepository, never()).logTransaction(anyInt(), anyString(), anyDouble(), anyString(), anyString(),
+		ResponseEntity actualResponse = transactController.deposit(depositRequestMap, mockHttpSession);
+
+		assertEquals(HttpStatus.BAD_REQUEST, actualResponse.getStatusCode());
+		assertEquals("Deposit amount cannot be zero.", actualResponse.getBody());
+
+		verify(mockAccountRepository, never()).changeAccountsBalanceById(anyDouble(), anyInt());
+		verify(mockTransactRepository, never()).logTransaction(anyInt(), anyString(), anyDouble(), anyString(), anyString(),
 				anyString(), any(LocalDateTime.class));
 	}
 
 	@Test
 	@Tag("boundary")
 	void negativeDepositAmountValue() {
-		// Arrange
-		requestMap.put("deposit_amount", "-100.0");
-		requestMap.put("account_id", "456");
+		depositRequestMap.put("deposit_amount", "-100.0");
+		depositRequestMap.put("account_id", "456");
 
-		when(session.getAttribute("user")).thenReturn(user);
-		when(accountRepository.getAccountBalance(123, 456)).thenReturn(500.0);
-		when(accountRepository.getUserAccountsById(123)).thenReturn((List) mockAccounts);
-		// Act
-		ResponseEntity result = transactController.deposit(requestMap, session);
-		// Assert
-		assertEquals(HttpStatus.OK, result.getStatusCode());
-		Map<String, Object> responseBody = (Map<String, Object>) result.getBody();
+		when(mockHttpSession.getAttribute("user")).thenReturn(testUser);
+		when(mockAccountRepository.getAccountBalance(123, 456)).thenReturn(500.0);
+		when(mockAccountRepository.getUserAccountsById(123)).thenReturn((List) mockUserAccounts);
+
+		ResponseEntity actualResponse = transactController.deposit(depositRequestMap, mockHttpSession);
+
+		assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
+		Map<String, Object> responseBody = (Map<String, Object>) actualResponse.getBody();
 		assertEquals("Amount Deposited Successfully.", responseBody.get("message"));
 
-		verify(accountRepository).changeAccountsBalanceById(400.0, 456);
-		verify(transactRepository).logTransaction(eq(456), eq("deposit"), eq(-100.0), eq("online"), eq("success"),
+		verify(mockAccountRepository).changeAccountsBalanceById(400.0, 456);
+		verify(mockTransactRepository).logTransaction(eq(456), eq("deposit"), eq(-100.0), eq("online"), eq("success"),
 				eq("Deposit Transaction Successfull"), any(LocalDateTime.class));
 	}
 
 	@Test
 	@Tag("invalid")
 	void nonNumericDepositAmount() {
-		// Arrange
-		requestMap.put("deposit_amount", "abc");
-		requestMap.put("account_id", "456");
+		depositRequestMap.put("deposit_amount", "abc");
+		depositRequestMap.put("account_id", "456");
 
-		when(session.getAttribute("user")).thenReturn(user);
-		// Act & Assert
+		when(mockHttpSession.getAttribute("user")).thenReturn(testUser);
+
 		assertThrows(NumberFormatException.class, () -> {
-			transactController.deposit(requestMap, session);
+			transactController.deposit(depositRequestMap, mockHttpSession);
 		});
 	}
 
 	@Test
 	@Tag("invalid")
 	void nonNumericAccountId() {
-		// Arrange
-		requestMap.put("deposit_amount", "100.0");
-		requestMap.put("account_id", "abc123");
+		depositRequestMap.put("deposit_amount", "100.0");
+		depositRequestMap.put("account_id", "abc123");
 
-		when(session.getAttribute("user")).thenReturn(user);
-		// Act & Assert
+		when(mockHttpSession.getAttribute("user")).thenReturn(testUser);
+
 		assertThrows(NumberFormatException.class, () -> {
-			transactController.deposit(requestMap, session);
+			transactController.deposit(depositRequestMap, mockHttpSession);
 		});
 	}
 
 	@Test
 	@Tag("invalid")
 	void missingUserInSession() {
-		// Arrange
-		requestMap.put("deposit_amount", "100.0");
-		requestMap.put("account_id", "456");
+		depositRequestMap.put("deposit_amount", "100.0");
+		depositRequestMap.put("account_id", "456");
 
-		when(session.getAttribute("user")).thenReturn(null);
-		// Act & Assert
+		when(mockHttpSession.getAttribute("user")).thenReturn(null);
+
 		assertThrows(NullPointerException.class, () -> {
-			transactController.deposit(requestMap, session);
+			transactController.deposit(depositRequestMap, mockHttpSession);
 		});
 	}
 
 	@Test
 	@Tag("invalid")
 	void invalidUserIdFormatInSession() {
-		// Arrange
-		requestMap.put("deposit_amount", "100.0");
-		requestMap.put("account_id", "456");
+		depositRequestMap.put("deposit_amount", "100.0");
+		depositRequestMap.put("account_id", "456");
 
-		User invalidUser = new User();
-		invalidUser.setUser_id("invalid_id");
-		when(session.getAttribute("user")).thenReturn(invalidUser);
-		// Act & Assert
+		User userWithInvalidId = new User();
+		userWithInvalidId.setUser_id("invalid_id");
+		when(mockHttpSession.getAttribute("user")).thenReturn(userWithInvalidId);
+
 		assertThrows(NumberFormatException.class, () -> {
-			transactController.deposit(requestMap, session);
+			transactController.deposit(depositRequestMap, mockHttpSession);
 		});
 	}
 
 	@Test
 	@Tag("boundary")
 	void accountRepositoryReturnsZeroBalance() {
-		// Arrange
-		requestMap.put("deposit_amount", "250.0");
-		requestMap.put("account_id", "456");
+		depositRequestMap.put("deposit_amount", "250.0");
+		depositRequestMap.put("account_id", "456");
 
-		when(session.getAttribute("user")).thenReturn(user);
-		when(accountRepository.getAccountBalance(123, 456)).thenReturn(0.0);
-		when(accountRepository.getUserAccountsById(123)).thenReturn((List) mockAccounts);
-		// Act
-		ResponseEntity result = transactController.deposit(requestMap, session);
-		// Assert
-		assertEquals(HttpStatus.OK, result.getStatusCode());
-		Map<String, Object> responseBody = (Map<String, Object>) result.getBody();
+		when(mockHttpSession.getAttribute("user")).thenReturn(testUser);
+		when(mockAccountRepository.getAccountBalance(123, 456)).thenReturn(0.0);
+		when(mockAccountRepository.getUserAccountsById(123)).thenReturn((List) mockUserAccounts);
+
+		ResponseEntity actualResponse = transactController.deposit(depositRequestMap, mockHttpSession);
+
+		assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
+		Map<String, Object> responseBody = (Map<String, Object>) actualResponse.getBody();
 		assertEquals("Amount Deposited Successfully.", responseBody.get("message"));
 
-		verify(accountRepository).changeAccountsBalanceById(250.0, 456);
-		verify(transactRepository).logTransaction(eq(456), eq("deposit"), eq(250.0), eq("online"), eq("success"),
+		verify(mockAccountRepository).changeAccountsBalanceById(250.0, 456);
+		verify(mockTransactRepository).logTransaction(eq(456), eq("deposit"), eq(250.0), eq("online"), eq("success"),
 				eq("Deposit Transaction Successfull"), any(LocalDateTime.class));
 	}
 
 	@Test
 	@Tag("boundary")
 	void largeDepositAmount() {
-		// Arrange
-		requestMap.put("deposit_amount", "999999999.99");
-		requestMap.put("account_id", "456");
+		depositRequestMap.put("deposit_amount", "999999999.99");
+		depositRequestMap.put("account_id", "456");
 
-		when(session.getAttribute("user")).thenReturn(user);
-		when(accountRepository.getAccountBalance(123, 456)).thenReturn(1000.0);
-		when(accountRepository.getUserAccountsById(123)).thenReturn((List) mockAccounts);
-		// Act
-		ResponseEntity result = transactController.deposit(requestMap, session);
-		// Assert
-		assertEquals(HttpStatus.OK, result.getStatusCode());
-		Map<String, Object> responseBody = (Map<String, Object>) result.getBody();
+		when(mockHttpSession.getAttribute("user")).thenReturn(testUser);
+		when(mockAccountRepository.getAccountBalance(123, 456)).thenReturn(1000.0);
+		when(mockAccountRepository.getUserAccountsById(123)).thenReturn((List) mockUserAccounts);
+
+		ResponseEntity actualResponse = transactController.deposit(depositRequestMap, mockHttpSession);
+
+		assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
+		Map<String, Object> responseBody = (Map<String, Object>) actualResponse.getBody();
 		assertEquals("Amount Deposited Successfully.", responseBody.get("message"));
 
-		verify(accountRepository).changeAccountsBalanceById(1000000000.99, 456);
-		verify(transactRepository).logTransaction(eq(456), eq("deposit"), eq(999999999.99), eq("online"), eq("success"),
+		verify(mockAccountRepository).changeAccountsBalanceById(1000000000.99, 456);
+		verify(mockTransactRepository).logTransaction(eq(456), eq("deposit"), eq(999999999.99), eq("online"), eq("success"),
 				eq("Deposit Transaction Successfull"), any(LocalDateTime.class));
 	}
 
 	@Test
 	@Tag("boundary")
 	void decimalDepositAmountWithHighPrecision() {
-		// Arrange
-		requestMap.put("deposit_amount", "123.456789");
-		requestMap.put("account_id", "456");
+		depositRequestMap.put("deposit_amount", "123.456789");
+		depositRequestMap.put("account_id", "456");
 
-		when(session.getAttribute("user")).thenReturn(user);
-		when(accountRepository.getAccountBalance(123, 456)).thenReturn(500.0);
-		when(accountRepository.getUserAccountsById(123)).thenReturn((List) mockAccounts);
-		// Act
-		ResponseEntity result = transactController.deposit(requestMap, session);
-		// Assert
-		assertEquals(HttpStatus.OK, result.getStatusCode());
-		Map<String, Object> responseBody = (Map<String, Object>) result.getBody();
+		when(mockHttpSession.getAttribute("user")).thenReturn(testUser);
+		when(mockAccountRepository.getAccountBalance(123, 456)).thenReturn(500.0);
+		when(mockAccountRepository.getUserAccountsById(123)).thenReturn((List) mockUserAccounts);
+
+		ResponseEntity actualResponse = transactController.deposit(depositRequestMap, mockHttpSession);
+
+		assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
+		Map<String, Object> responseBody = (Map<String, Object>) actualResponse.getBody();
 		assertEquals("Amount Deposited Successfully.", responseBody.get("message"));
 
-		verify(accountRepository).changeAccountsBalanceById(623.456789, 456);
-		verify(transactRepository).logTransaction(eq(456), eq("deposit"), eq(123.456789), eq("online"), eq("success"),
+		verify(mockAccountRepository).changeAccountsBalanceById(623.456789, 456);
+		verify(mockTransactRepository).logTransaction(eq(456), eq("deposit"), eq(123.456789), eq("online"), eq("success"),
 				eq("Deposit Transaction Successfull"), any(LocalDateTime.class));
 	}
 
 	@Test
 	@Tag("integration")
 	void repositoryFailureDuringBalanceRetrieval() {
-		// Arrange
-		requestMap.put("deposit_amount", "100.0");
-		requestMap.put("account_id", "456");
+		depositRequestMap.put("deposit_amount", "100.0");
+		depositRequestMap.put("account_id", "456");
 
-		when(session.getAttribute("user")).thenReturn(user);
-		when(accountRepository.getAccountBalance(123, 456)).thenThrow(new RuntimeException("Database error"));
-		// Act & Assert
+		when(mockHttpSession.getAttribute("user")).thenReturn(testUser);
+		when(mockAccountRepository.getAccountBalance(123, 456)).thenThrow(new RuntimeException("Database error"));
+
 		assertThrows(RuntimeException.class, () -> {
-			transactController.deposit(requestMap, session);
+			transactController.deposit(depositRequestMap, mockHttpSession);
 		});
 
-		verify(accountRepository, never()).changeAccountsBalanceById(anyDouble(), anyInt());
-		verify(transactRepository, never()).logTransaction(anyInt(), anyString(), anyDouble(), anyString(), anyString(),
+		verify(mockAccountRepository, never()).changeAccountsBalanceById(anyDouble(), anyInt());
+		verify(mockTransactRepository, never()).logTransaction(anyInt(), anyString(), anyDouble(), anyString(), anyString(),
 				anyString(), any(LocalDateTime.class));
 	}
 
 	@Test
 	@Tag("integration")
 	void repositoryFailureDuringBalanceUpdate() {
-		// Arrange
-		requestMap.put("deposit_amount", "100.0");
-		requestMap.put("account_id", "456");
+		depositRequestMap.put("deposit_amount", "100.0");
+		depositRequestMap.put("account_id", "456");
 
-		when(session.getAttribute("user")).thenReturn(user);
-		when(accountRepository.getAccountBalance(123, 456)).thenReturn(500.0);
-		doThrow(new RuntimeException("Update failed")).when(accountRepository).changeAccountsBalanceById(600.0, 456);
-		// Act & Assert
+		when(mockHttpSession.getAttribute("user")).thenReturn(testUser);
+		when(mockAccountRepository.getAccountBalance(123, 456)).thenReturn(500.0);
+		doThrow(new RuntimeException("Update failed")).when(mockAccountRepository).changeAccountsBalanceById(600.0, 456);
+
 		assertThrows(RuntimeException.class, () -> {
-			transactController.deposit(requestMap, session);
+			transactController.deposit(depositRequestMap, mockHttpSession);
 		});
 
-		verify(transactRepository, never()).logTransaction(anyInt(), anyString(), anyDouble(), anyString(), anyString(),
+		verify(mockTransactRepository, never()).logTransaction(anyInt(), anyString(), anyDouble(), anyString(), anyString(),
 				anyString(), any(LocalDateTime.class));
 	}
 
 	@Test
 	@Tag("integration")
 	void transactionLoggingFailure() {
-		// Arrange
-		requestMap.put("deposit_amount", "100.0");
-		requestMap.put("account_id", "456");
+		depositRequestMap.put("deposit_amount", "100.0");
+		depositRequestMap.put("account_id", "456");
 
-		when(session.getAttribute("user")).thenReturn(user);
-		when(accountRepository.getAccountBalance(123, 456)).thenReturn(500.0);
-		doThrow(new RuntimeException("Logging failed")).when(transactRepository)
+		when(mockHttpSession.getAttribute("user")).thenReturn(testUser);
+		when(mockAccountRepository.getAccountBalance(123, 456)).thenReturn(500.0);
+		doThrow(new RuntimeException("Logging failed")).when(mockTransactRepository)
 			.logTransaction(anyInt(), anyString(), anyDouble(), anyString(), anyString(), anyString(),
 					any(LocalDateTime.class));
-		// Act & Assert
+
 		assertThrows(RuntimeException.class, () -> {
-			transactController.deposit(requestMap, session);
+			transactController.deposit(depositRequestMap, mockHttpSession);
 		});
 
-		verify(accountRepository).changeAccountsBalanceById(600.0, 456);
+		verify(mockAccountRepository).changeAccountsBalanceById(600.0, 456);
 	}
 
 	@Test
 	@Tag("integration")
 	void accountRetrievalFailureForResponse() {
-		// Arrange
-		requestMap.put("deposit_amount", "100.0");
-		requestMap.put("account_id", "456");
+		depositRequestMap.put("deposit_amount", "100.0");
+		depositRequestMap.put("account_id", "456");
 
-		when(session.getAttribute("user")).thenReturn(user);
-		when(accountRepository.getAccountBalance(123, 456)).thenReturn(500.0);
-		when(accountRepository.getUserAccountsById(123)).thenThrow(new RuntimeException("Account retrieval failed"));
-		// Act & Assert
+		when(mockHttpSession.getAttribute("user")).thenReturn(testUser);
+		when(mockAccountRepository.getAccountBalance(123, 456)).thenReturn(500.0);
+		when(mockAccountRepository.getUserAccountsById(123)).thenThrow(new RuntimeException("Account retrieval failed"));
+
 		assertThrows(RuntimeException.class, () -> {
-			transactController.deposit(requestMap, session);
+			transactController.deposit(depositRequestMap, mockHttpSession);
 		});
 
-		verify(accountRepository).changeAccountsBalanceById(600.0, 456);
-		verify(transactRepository).logTransaction(eq(456), eq("deposit"), eq(100.0), eq("online"), eq("success"),
+		verify(mockAccountRepository).changeAccountsBalanceById(600.0, 456);
+		verify(mockTransactRepository).logTransaction(eq(456), eq("deposit"), eq(100.0), eq("online"), eq("success"),
 				eq("Deposit Transaction Successfull"), any(LocalDateTime.class));
 	}
 
 	@Test
 	@Tag("valid")
 	void successfulDepositWithExistingBalance() {
-		// Arrange
-		requestMap.put("deposit_amount", "250.0");
-		requestMap.put("account_id", "456");
+		depositRequestMap.put("deposit_amount", "250.0");
+		depositRequestMap.put("account_id", "456");
 
-		when(session.getAttribute("user")).thenReturn(user);
-		when(accountRepository.getAccountBalance(123, 456)).thenReturn(500.0);
-		when(accountRepository.getUserAccountsById(123)).thenReturn((List) mockAccounts);
-		// Act
-		ResponseEntity result = transactController.deposit(requestMap, session);
-		// Assert
-		assertEquals(HttpStatus.OK, result.getStatusCode());
-		Map<String, Object> responseBody = (Map<String, Object>) result.getBody();
+		when(mockHttpSession.getAttribute("user")).thenReturn(testUser);
+		when(mockAccountRepository.getAccountBalance(123, 456)).thenReturn(500.0);
+		when(mockAccountRepository.getUserAccountsById(123)).thenReturn((List) mockUserAccounts);
+
+		ResponseEntity actualResponse = transactController.deposit(depositRequestMap, mockHttpSession);
+
+		assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
+		Map<String, Object> responseBody = (Map<String, Object>) actualResponse.getBody();
 		assertNotNull(responseBody);
 		assertEquals("Amount Deposited Successfully.", responseBody.get("message"));
-		assertEquals(mockAccounts, responseBody.get("accounts"));
+		assertEquals(mockUserAccounts, responseBody.get("accounts"));
 
-		verify(accountRepository).getAccountBalance(123, 456);
-		verify(accountRepository).changeAccountsBalanceById(750.0, 456);
-		verify(transactRepository).logTransaction(eq(456), eq("deposit"), eq(250.0), eq("online"), eq("success"),
+		verify(mockAccountRepository).getAccountBalance(123, 456);
+		verify(mockAccountRepository).changeAccountsBalanceById(750.0, 456);
+		verify(mockTransactRepository).logTransaction(eq(456), eq("deposit"), eq(250.0), eq("online"), eq("success"),
 				eq("Deposit Transaction Successfull"), any(LocalDateTime.class));
-		verify(accountRepository).getUserAccountsById(123);
+		verify(mockAccountRepository).getUserAccountsById(123);
 	}
 
 }
