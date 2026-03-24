@@ -1,0 +1,508 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "DemoBank API",
+    "version": "1.0.0",
+    "description": "DemoBank API - account management, transactions, payments, and authentication."
+  },
+  "paths": {
+    "/login": {
+      "post": {
+        "summary": "User login",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string" },
+                  "password": { "type": "string" }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User authenticated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "access_token": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Username or Password Cannot Be Empty." },
+          "401": { "description": "Incorrect Username or Password" },
+          "403": { "description": "Account verification required." },
+          "500": { "description": "Internal server error." }
+        }
+      }
+    },
+    "/logout": {
+      "get": {
+        "summary": "User logout",
+        "responses": {
+          "200": {
+            "description": "User logged out successfully.",
+            "content": {
+              "application/json": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "/register": {
+      "post": {
+        "summary": "Register new user",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "confirm_password",
+            "schema": { "type": "string" },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/User" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Registration successful.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "user": { "$ref": "#/components/schemas/User" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation or password error",
+            "content": { "application/json": { "schema": { "type": "string" } } }
+          }
+        }
+      }
+    },
+    "/account/create_account": {
+      "post": {
+        "summary": "Create a new bank account",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "account_name": { "type": "string" },
+                  "account_type": { "type": "string" }
+                },
+                "required": ["account_name", "account_type"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Account successfully created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Account" }
+                }
+              }
+            }
+          },
+          "400": { "description": "Account name or type is empty." },
+          "401": { "description": "Unauthorized, not logged in." }
+        }
+      }
+    },
+    "/app/dashboard": {
+      "get": {
+        "summary": "Retrieve dashboard for logged in user",
+        "responses": {
+          "200": {
+            "description": "User's accounts and total balance",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "userAccounts": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Account" }
+                    },
+                    "totalBalance": { "type": "number" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/payment_history": {
+      "get": {
+        "summary": "Get user payment history",
+        "responses": {
+          "200": {
+            "description": "User payment history",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "payment_history": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/PaymentHistory" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/transaction_history": {
+      "get": {
+        "summary": "Get user transaction history",
+        "responses": {
+          "200": {
+            "description": "User transaction history",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "transaction_history": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/TransactionHistory" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/account_transaction_history": {
+      "post": {
+        "summary": "Get transaction history for specific account",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "account_id": { "type": "string" }
+                },
+                "required": ["account_id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Transaction history for account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "transaction_history": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/TransactionHistory" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "summary": "Greeting endpoint",
+        "responses": {
+          "200": {
+            "description": "Greeting string",
+            "content": {
+              "application/json": {
+                "schema": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/verify": {
+      "get": {
+        "summary": "Account verification",
+        "parameters": [
+          { "name": "token", "in": "query", "schema": { "type": "string" }, "required": true },
+          { "name": "code", "in": "query", "schema": { "type": "string" }, "required": true }
+        ],
+        "responses": {
+          "200": {
+            "description": "Verification success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                }
+              }
+            }
+          },
+          "400": { "description": "Session expired / Invalid token." }
+        }
+      }
+    },
+    "/transact/deposit": {
+      "post": {
+        "summary": "Deposit funds",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "deposit_amount": { "type": "string" },
+                  "account_id": { "type": "string" }
+                },
+                "required": ["deposit_amount", "account_id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Amount deposited successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "accounts": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Account" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Deposit amount/account ID empty or invalid." }
+        }
+      }
+    },
+    "/transact/transfer": {
+      "post": {
+        "summary": "Transfer funds",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/TransferRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Transfer completed successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "accounts": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Account" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Validation error, insufficient funds, or invalid parameters." }
+        }
+      }
+    },
+    "/transact/withdraw": {
+      "post": {
+        "summary": "Withdraw funds",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "withdrawal_amount": { "type": "string" },
+                  "account_id": { "type": "string" }
+                },
+                "required": ["withdrawal_amount", "account_id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Withdrawal successful.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "accounts": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Account" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Validation error, insufficient funds, or invalid parameters." }
+        }
+      }
+    },
+    "/transact/payment": {
+      "post": {
+        "summary": "Process a payment",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PaymentRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Payment processed successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "accounts": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Account" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Validation error, insufficient funds, or invalid parameters." }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "user_id": { "type": "string" },
+          "first_name": { "type": "string" },
+          "last_name": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "password": { "type": "string" },
+          "token": { "type": "string" },
+          "code": { "type": "string" },
+          "verified": { "type": "integer" },
+          "verified_at": { "type": "string", "format": "date" },
+          "create_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Account": {
+        "type": "object",
+        "properties": {
+          "account_id": { "type": "integer" },
+          "user_id": { "type": "integer" },
+          "account_number": { "type": "string" },
+          "account_name": { "type": "string" },
+          "account_type": { "type": "string" },
+          "balance": { "type": "number" },
+          "create_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "PaymentRequest": {
+        "type": "object",
+        "properties": {
+          "beneficiary": { "type": "string" },
+          "account_number": { "type": "string" },
+          "account_id": { "type": "string" },
+          "reference": { "type": "string" },
+          "payment_amount": { "type": "string" }
+        }
+      },
+      "TransferRequest": {
+        "type": "object",
+        "properties": {
+          "sourceAccount": { "type": "string" },
+          "targetAccount": { "type": "string" },
+          "amount": { "type": "string" }
+        }
+      },
+      "PaymentHistory": {
+        "type": "object",
+        "properties": {
+          "payment_id": { "type": "integer" },
+          "account_id": { "type": "integer" },
+          "beneficiary": { "type": "string" },
+          "beneficiary_acc_no": { "type": "string" },
+          "amount": { "type": "number" },
+          "reference_no": { "type": "string" },
+          "status": { "type": "string" },
+          "reason_code": { "type": "string" },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "TransactionHistory": {
+        "type": "object",
+        "properties": {
+          "transaction_id": { "type": "integer" },
+          "account_id": { "type": "integer" },
+          "transaction_type": { "type": "string" },
+          "amount": { "type": "number" },
+          "source": { "type": "string" },
+          "status": { "type": "string" },
+          "reason_code": { "type": "string" },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      }
+    }
+  }
+}
