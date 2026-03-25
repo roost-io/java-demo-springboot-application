@@ -156,6 +156,8 @@ Validation:
   Confirms the scalability and stability of the endpoint in more demanding production-relevant scenarios.
 
 
+
+roost_feedback [25/03/2026, 1:39:46 PM]:Modify\sCode\sto\sfix\sthis\serror\nSuccessfully\scompiled\sbut\sfailed\sat\sruntime.\n\nError\sAnalysis:\n*\sWhat\sFailed:\sTest\sexpected\sNullPointerException\sbut\sgot\sNumberFormatException\swhen\saccount\sID\sis\smissing.\n*\sWhere:\sAppControllerGetAccountTransactiontHistoryTest.java:79\s(calls\sAppController.getAccountTransactiontHistory,\sline\s104)\n*\sWhy:\sThe\scode\sattempts\sto\sparse\sa\snull\saccount\sID\sas\san\sinteger,\sresulting\sin\sNumberFormatException\sinstead\sof\sNullPointerException.\n*\sInvestigate:\sUpdate\seither\sthe\stest\sto\sexpect\sNumberFormatException\sor\sthe\scontroller\slogic\sto\sthrow\sNullPointerException\sas\sintended\swhen\saccount\sID\sis\smissing.\sReview\sinput\svalidation\sfor\saccount\sID\sin\sAppController.,\n\n\ndo\snot\sexpect\snull\sformat\sexception
 */
 
 // ********RoostGPT********
@@ -202,9 +204,6 @@ class AppControllerGetAccountTransactiontHistoryTest {
 	void setUp() {
 		transactHistoryRepository = Mockito.mock(TransactHistoryRepository.class);
 		appController = new AppController();
-		// Inject mock repository into AppController. Replace with real injection if
-		// necessary.
-		// TODO: If using dependency injection, update how the repository is set.
 		java.lang.reflect.Field repoField;
 		try {
 			repoField = AppController.class.getDeclaredField("transactHistoryRepository");
@@ -221,7 +220,7 @@ class AppControllerGetAccountTransactiontHistoryTest {
 	@Tag("valid")
 	public void testValidAccountIdReturnsTransactionHistory() {
 		Map<String, String> requestMap = new HashMap<>();
-		int accountId = 123; // TODO: Change to desired valid account ID
+		int accountId = 123;
 		requestMap.put("account_id", String.valueOf(accountId));
 		List<TransactionHistory> mockList = Arrays.asList(Mockito.mock(TransactionHistory.class),
 				Mockito.mock(TransactionHistory.class));
@@ -241,7 +240,6 @@ class AppControllerGetAccountTransactiontHistoryTest {
 	@Tag("invalid")
 	public void testMissingAccountIdInRequestThrowsException() {
 		Map<String, String> requestMap = new HashMap<>();
-		// Account ID is absent
 		Exception thrown = assertThrows(NullPointerException.class, () -> {
 			appController.getAccountTransactiontHistory(requestMap, Mockito.mock(HttpSession.class));
 		});
@@ -265,7 +263,7 @@ class AppControllerGetAccountTransactiontHistoryTest {
 	@Tag("valid")
 	public void testValidAccountIdReturnsEmptyTransactionHistoryList() {
 		Map<String, String> requestMap = new HashMap<>();
-		int accountId = 789; // TODO: Change to valid account ID as needed
+		int accountId = 789;
 		requestMap.put("account_id", String.valueOf(accountId));
 		List<TransactionHistory> emptyList = Collections.emptyList();
 		Mockito.when(transactHistoryRepository.getTransactionRecordsByAccountId(accountId)).thenReturn(emptyList);
@@ -283,7 +281,7 @@ class AppControllerGetAccountTransactiontHistoryTest {
 	@Tag("boundary")
 	public void testRepositoryReturnsNullList() {
 		Map<String, String> requestMap = new HashMap<>();
-		int accountId = 456; // TODO: Change to appropriate account ID
+		int accountId = 456;
 		requestMap.put("account_id", String.valueOf(accountId));
 		Mockito.when(transactHistoryRepository.getTransactionRecordsByAccountId(accountId)).thenReturn(null);
 		ResponseEntity<?> response = appController.getAccountTransactiontHistory(requestMap,
@@ -299,7 +297,7 @@ class AppControllerGetAccountTransactiontHistoryTest {
 	@Tag("integration")
 	public void testRepositoryThrowsExceptionPropagates() {
 		Map<String, String> requestMap = new HashMap<>();
-		int accountId = 888; // TODO: Modify as per test needs
+		int accountId = 888;
 		requestMap.put("account_id", String.valueOf(accountId));
 		Mockito.when(transactHistoryRepository.getTransactionRecordsByAccountId(accountId))
 			.thenThrow(new RuntimeException("Repository failure"));
@@ -323,7 +321,7 @@ class AppControllerGetAccountTransactiontHistoryTest {
 	@Tag("valid")
 	public void testResponseEntityContainsExpectedKeys() {
 		Map<String, String> requestMap = new HashMap<>();
-		int accountId = 321; // TODO: Use desired account ID
+		int accountId = 321;
 		requestMap.put("account_id", String.valueOf(accountId));
 		List<TransactionHistory> mockList = Arrays.asList(Mockito.mock(TransactionHistory.class));
 		Mockito.when(transactHistoryRepository.getTransactionRecordsByAccountId(accountId)).thenReturn(mockList);
@@ -343,7 +341,7 @@ class AppControllerGetAccountTransactiontHistoryTest {
 	@Tag("boundary")
 	public void testNullHttpSessionDoesNotAffectResult() {
 		Map<String, String> requestMap = new HashMap<>();
-		int accountId = 654; // TODO: Change to a valid account ID
+		int accountId = 654;
 		requestMap.put("account_id", String.valueOf(accountId));
 		List<TransactionHistory> mockList = Arrays.asList(Mockito.mock(TransactionHistory.class));
 		Mockito.when(transactHistoryRepository.getTransactionRecordsByAccountId(accountId)).thenReturn(mockList);
@@ -360,9 +358,9 @@ class AppControllerGetAccountTransactiontHistoryTest {
 	@Tag("boundary")
 	public void testLargeTransactionHistoryReturnedCorrectly() {
 		Map<String, String> requestMap = new HashMap<>();
-		int accountId = 999; // TODO: Change to desired large account ID
+		int accountId = 999;
 		requestMap.put("account_id", String.valueOf(accountId));
-		int largeCount = 5000; // Large size for boundary testing
+		int largeCount = 5000;
 		List<TransactionHistory> largeList = new ArrayList<>();
 		for (int i = 0; i < largeCount; i++) {
 			largeList.add(Mockito.mock(TransactionHistory.class));
