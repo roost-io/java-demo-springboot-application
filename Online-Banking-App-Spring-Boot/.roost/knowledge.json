@@ -1,0 +1,669 @@
+{
+  "endpoints": [
+    {
+      "controller": "AccountController",
+      "classPath": "com.beko.DemoBank_v1.controllers.AccountController",
+      "baseRoute": "/account",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/account/create_account",
+          "function": "createAccount",
+          "requestBody": {
+            "type": "application/json",
+            "fields": [
+              {
+                "name": "account_name",
+                "type": "string"
+              },
+              {
+                "name": "account_type",
+                "type": "string"
+              }
+            ]
+          },
+          "sessionParam": "user",
+          "responses": [
+            {
+              "status": 200,
+              "description": "List of accounts (JSON)"
+            },
+            {
+              "status": 400,
+              "description": "Missing account_name or account_type"
+            },
+            {
+              "status": 401,
+              "description": "User not logged in"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "AppController",
+      "classPath": "com.beko.DemoBank_v1.controllers.AppController",
+      "baseRoute": "/app",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/app/dashboard",
+          "function": "getDashboard",
+          "sessionParam": "user",
+          "responses": [
+            {
+              "status": 200,
+              "description": "User accounts and total balance (JSON)"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/app/payment_history",
+          "function": "getPaymentHistory",
+          "sessionParam": "user",
+          "responses": [
+            {
+              "status": 200,
+              "description": "User's payment history (JSON)"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/app/transaction_history",
+          "function": "getTransactiontHistory",
+          "sessionParam": "user",
+          "responses": [
+            {
+              "status": 200,
+              "description": "User's transaction history (JSON)"
+            }
+          ]
+        },
+        {
+          "method": "POST",
+          "path": "/app/account_transaction_history",
+          "function": "getAccountTransactiontHistory",
+          "requestBody": {
+            "type": "application/json",
+            "fields": [
+              {
+                "name": "account_id",
+                "type": "string"
+              }
+            ]
+          },
+          "sessionParam": "user",
+          "responses": [
+            {
+              "status": 200,
+              "description": "Transaction history for given account (JSON)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "AuthController",
+      "classPath": "com.beko.DemoBank_v1.controllers.AuthController",
+      "baseRoute": "",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/login",
+          "function": "login",
+          "requestBody": {
+            "type": "application/json",
+            "fields": [
+              {
+                "name": "email",
+                "type": "string"
+              },
+              {
+                "name": "password",
+                "type": "string"
+              }
+            ]
+          },
+          "responses": [
+            {
+              "status": 200,
+              "description": "Authentication confirmed, returns { message, access_token }"
+            },
+            {
+              "status": 400,
+              "description": "Username or Password cannot be empty"
+            },
+            {
+              "status": 401,
+              "description": "Incorrect Username or Password"
+            },
+            {
+              "status": 403,
+              "description": "Account verification required"
+            },
+            {
+              "status": 500,
+              "description": "Something went wrong (email not found)"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/logout",
+          "function": "logout",
+          "sessionParam": "user",
+          "responses": [
+            {
+              "status": 200,
+              "description": "Logged out successfully"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "IndexController",
+      "classPath": "com.beko.DemoBank_v1.controllers.IndexController",
+      "baseRoute": "",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/",
+          "function": "getIndex",
+          "responses": [
+            {
+              "status": 200,
+              "description": "Greeting string"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/verify",
+          "function": "getVerify",
+          "parameters": [
+            {
+              "name": "token",
+              "in": "query",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "code",
+              "in": "query",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": [
+            {
+              "status": 200,
+              "description": "Verification success { message: string }"
+            },
+            {
+              "status": 400,
+              "description": "Session expired or invalid token"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "RegisterController",
+      "classPath": "com.beko.DemoBank_v1.controllers.RegisterController",
+      "baseRoute": "",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/register",
+          "function": "registerUser",
+          "requestBody": {
+            "type": "application/json",
+            "fields": [
+              {
+                "name": "first_name",
+                "type": "string"
+              },
+              {
+                "name": "last_name",
+                "type": "string"
+              },
+              {
+                "name": "email",
+                "type": "string"
+              },
+              {
+                "name": "password",
+                "type": "string"
+              }
+            ]
+          },
+          "parameters": [
+            {
+              "name": "confirm_password",
+              "in": "query",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": [
+            {
+              "status": 200,
+              "description": "Registration success and created user returned (JSON)"
+            },
+            {
+              "status": 400,
+              "description": "Validation error(s) or password mismatch"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "controller": "TransactController",
+      "classPath": "com.beko.DemoBank_v1.controllers.TransactController",
+      "baseRoute": "/transact",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/transact/deposit",
+          "function": "deposit",
+          "requestBody": {
+            "type": "application/json",
+            "fields": [
+              {
+                "name": "deposit_amount",
+                "type": "string"
+              },
+              {
+                "name": "account_id",
+                "type": "string"
+              }
+            ]
+          },
+          "sessionParam": "user",
+          "responses": [
+            {
+              "status": 200,
+              "description": "Deposit successful, returns updated accounts"
+            },
+            {
+              "status": 400,
+              "description": "Deposit amount/account ID empty or zero"
+            }
+          ]
+        },
+        {
+          "method": "POST",
+          "path": "/transact/transfer",
+          "function": "transfer",
+          "requestBody": {
+            "type": "application/json",
+            "fields": [
+              {
+                "name": "sourceAccount",
+                "type": "string"
+              },
+              {
+                "name": "targetAccount",
+                "type": "string"
+              },
+              {
+                "name": "amount",
+                "type": "string"
+              }
+            ]
+          },
+          "sessionParam": "user",
+          "responses": [
+            {
+              "status": 200,
+              "description": "Transfer completed, returns updated accounts"
+            },
+            {
+              "status": 400,
+              "description": "Empty fields, same account, amount is zero, or insufficient funds"
+            }
+          ]
+        },
+        {
+          "method": "POST",
+          "path": "/transact/withdraw",
+          "function": "withdraw",
+          "requestBody": {
+            "type": "application/json",
+            "fields": [
+              {
+                "name": "withdrawal_amount",
+                "type": "string"
+              },
+              {
+                "name": "account_id",
+                "type": "string"
+              }
+            ]
+          },
+          "sessionParam": "user",
+          "responses": [
+            {
+              "status": 200,
+              "description": "Withdrawal successful, returns updated accounts"
+            },
+            {
+              "status": 400,
+              "description": "Empty fields, amount is zero, or insufficient funds"
+            }
+          ]
+        },
+        {
+          "method": "POST",
+          "path": "/transact/payment",
+          "function": "payment",
+          "requestBody": {
+            "type": "application/json",
+            "fields": [
+              {
+                "name": "beneficiary",
+                "type": "string"
+              },
+              {
+                "name": "account_number",
+                "type": "string"
+              },
+              {
+                "name": "account_id",
+                "type": "string"
+              },
+              {
+                "name": "reference",
+                "type": "string"
+              },
+              {
+                "name": "payment_amount",
+                "type": "string"
+              }
+            ]
+          },
+          "sessionParam": "user",
+          "responses": [
+            {
+              "status": 200,
+              "description": "Payment processed, returns updated accounts"
+            },
+            {
+              "status": 400,
+              "description": "Missing fields, payment amount is zero, or insufficient funds"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "models": [
+    {
+      "name": "Account",
+      "fields": [
+        {
+          "name": "account_id",
+          "type": "int"
+        },
+        {
+          "name": "user_id",
+          "type": "int"
+        },
+        {
+          "name": "account_number",
+          "type": "string"
+        },
+        {
+          "name": "account_name",
+          "type": "string"
+        },
+        {
+          "name": "account_type",
+          "type": "string"
+        },
+        {
+          "name": "balance",
+          "type": "BigDecimal"
+        },
+        {
+          "name": "create_at",
+          "type": "LocalDateTime"
+        },
+        {
+          "name": "updated_at",
+          "type": "LocalDateTime"
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "fields": [
+        {
+          "name": "user_id",
+          "type": "string"
+        },
+        {
+          "name": "first_name",
+          "type": "string"
+        },
+        {
+          "name": "last_name",
+          "type": "string"
+        },
+        {
+          "name": "email",
+          "type": "string"
+        },
+        {
+          "name": "password",
+          "type": "string"
+        },
+        {
+          "name": "token",
+          "type": "string"
+        },
+        {
+          "name": "code",
+          "type": "string"
+        },
+        {
+          "name": "verified",
+          "type": "int"
+        },
+        {
+          "name": "verified_at",
+          "type": "LocalDate"
+        },
+        {
+          "name": "create_at",
+          "type": "LocalDateTime"
+        },
+        {
+          "name": "updated_at",
+          "type": "LocalDateTime"
+        }
+      ]
+    },
+    {
+      "name": "Payment",
+      "fields": [
+        {
+          "name": "payment_id",
+          "type": "int"
+        },
+        {
+          "name": "account_id",
+          "type": "int"
+        },
+        {
+          "name": "beneficiary",
+          "type": "string"
+        },
+        {
+          "name": "beneficiary_acc_no",
+          "type": "string"
+        },
+        {
+          "name": "amount",
+          "type": "double"
+        },
+        {
+          "name": "reference_no",
+          "type": "string"
+        },
+        {
+          "name": "status",
+          "type": "string"
+        },
+        {
+          "name": "reason_code",
+          "type": "string"
+        },
+        {
+          "name": "created_at",
+          "type": "LocalDateTime"
+        }
+      ]
+    },
+    {
+      "name": "PaymentHistory",
+      "fields": [
+        {
+          "name": "payment_id",
+          "type": "int"
+        },
+        {
+          "name": "account_id",
+          "type": "int"
+        },
+        {
+          "name": "beneficiary",
+          "type": "string"
+        },
+        {
+          "name": "beneficiary_acc_no",
+          "type": "string"
+        },
+        {
+          "name": "amount",
+          "type": "double"
+        },
+        {
+          "name": "reference_no",
+          "type": "string"
+        },
+        {
+          "name": "status",
+          "type": "string"
+        },
+        {
+          "name": "reason_code",
+          "type": "string"
+        },
+        {
+          "name": "created_at",
+          "type": "LocalDateTime"
+        }
+      ]
+    },
+    {
+      "name": "TransactionHistory",
+      "fields": [
+        {
+          "name": "transaction_id",
+          "type": "int"
+        },
+        {
+          "name": "account_id",
+          "type": "int"
+        },
+        {
+          "name": "transaction_type",
+          "type": "string"
+        },
+        {
+          "name": "amount",
+          "type": "double"
+        },
+        {
+          "name": "source",
+          "type": "string"
+        },
+        {
+          "name": "status",
+          "type": "string"
+        },
+        {
+          "name": "reason_code",
+          "type": "string"
+        },
+        {
+          "name": "created_at",
+          "type": "LocalDateTime"
+        }
+      ]
+    },
+    {
+      "name": "PaymentRequest",
+      "fields": [
+        {
+          "name": "beneficiary",
+          "type": "string"
+        },
+        {
+          "name": "account_number",
+          "type": "string"
+        },
+        {
+          "name": "account_id",
+          "type": "string"
+        },
+        {
+          "name": "reference",
+          "type": "string"
+        },
+        {
+          "name": "payment_amount",
+          "type": "string"
+        }
+      ]
+    }
+  ],
+  "dependencies": [],
+  "businessFlows": [],
+  "language": "java",
+  "buildTool": "maven",
+  "framework": "spring-boot",
+  "projectStructure": {
+    "src/main/java/com/beko/DemoBank_v1/controllers": [
+      "AccountController.java",
+      "AppController.java",
+      "AuthController.java",
+      "IndexController.java",
+      "RegisterController.java",
+      "TransactController.java"
+    ],
+    "src/main/java/com/beko/DemoBank_v1/models": [
+      "Account.java",
+      "Payment.java",
+      "PaymentHistory.java",
+      "PaymentRequest.java",
+      "Transact.java",
+      "TransactionHistory.java",
+      "TransferRequest.java",
+      "User.java"
+    ],
+    "otherDirs": [
+      "config",
+      "exception",
+      "helpers",
+      "interceptors",
+      "mailMessenger",
+      "repository"
+    ]
+  }
+}
