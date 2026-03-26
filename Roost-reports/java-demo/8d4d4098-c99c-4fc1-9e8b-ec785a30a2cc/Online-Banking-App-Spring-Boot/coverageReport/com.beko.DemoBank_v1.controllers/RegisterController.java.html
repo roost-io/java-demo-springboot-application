@@ -22,60 +22,58 @@ import java.util.*;
 @RestController
 <span class="nc" id="L23">public class RegisterController {</span>
 
-	@Autowired
-	private UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-	@PostMapping(&quot;/register&quot;)
-	public ResponseEntity&lt;?&gt; registerUser(@Valid @RequestBody User user, BindingResult bindingResult,
-			@RequestParam(&quot;confirm_password&quot;) String confirmPassword) {
+    @PostMapping(&quot;/register&quot;)
+    public ResponseEntity&lt;?&gt; registerUser(@Valid @RequestBody User user, BindingResult bindingResult, @RequestParam(&quot;confirm_password&quot;) String confirmPassword) {
 
-<span class="nc" id="L32">		String firstName = user.getFirst_name();</span>
-<span class="nc" id="L33">		String lastName = user.getLast_name();</span>
-<span class="nc" id="L34">		String email = user.getEmail();</span>
-<span class="nc" id="L35">		String password = user.getPassword();</span>
 
-<span class="nc bnc" id="L37" title="All 4 branches missed.">		if (bindingResult.hasErrors() &amp;&amp; confirmPassword.isEmpty()) {</span>
-<span class="nc" id="L38">			List&lt;String&gt; errorMessages = new ArrayList&lt;&gt;();</span>
-<span class="nc bnc" id="L39" title="All 2 branches missed.">			for (FieldError error : bindingResult.getFieldErrors()) {</span>
-<span class="nc" id="L40">				errorMessages.add(error.getDefaultMessage());</span>
-<span class="nc" id="L41">			}</span>
-<span class="nc" id="L42">			return ResponseEntity.badRequest().body(errorMessages);</span>
-		}
+<span class="nc" id="L32">        String firstName = user.getFirst_name();</span>
+<span class="nc" id="L33">        String lastName = user.getLast_name();</span>
+<span class="nc" id="L34">        String email = user.getEmail();</span>
+<span class="nc" id="L35">        String password = user.getPassword();</span>
 
-		//
-		// TODO: CHECK FOR PASSWORD MATCH:
-<span class="nc bnc" id="L47" title="All 2 branches missed.">		if (!password.equals(confirmPassword))</span>
-<span class="nc" id="L48">			return ResponseEntity.badRequest().body(&quot;Şifreler uyuşmuyor.&quot;);</span>
-		// TODO: GET TOKEN STRING:
-<span class="nc" id="L50">		String token = Token.generateToken();</span>
+<span class="nc bnc" id="L37" title="All 4 branches missed.">        if(bindingResult.hasErrors() &amp;&amp; confirmPassword.isEmpty()){</span>
+<span class="nc" id="L38">            List&lt;String&gt; errorMessages = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">            for(FieldError error : bindingResult.getFieldErrors()){</span>
+<span class="nc" id="L40">                errorMessages.add(error.getDefaultMessage());</span>
+<span class="nc" id="L41">            }</span>
+<span class="nc" id="L42">            return ResponseEntity.badRequest().body(errorMessages);</span>
+        }
 
-		// TODO: GENERATE RANDOM CODE:
-<span class="nc" id="L53">		Random rand = new Random();</span>
-<span class="nc" id="L54">		int bound = 123;</span>
-<span class="nc" id="L55">		int code = bound * rand.nextInt(bound);</span>
+        //
+        //TODO: CHECK FOR PASSWORD MATCH:
+<span class="nc bnc" id="L47" title="All 2 branches missed.">        if(!password.equals(confirmPassword))</span>
+<span class="nc" id="L48">            return ResponseEntity.badRequest().body(&quot;Şifreler uyuşmuyor.&quot;);</span>
+        //TODO: GET TOKEN STRING:
+<span class="nc" id="L50">        String token = Token.generateToken();</span>
 
-		// TODO: GET EMAIL HTML BODY
-<span class="nc" id="L58">		String emailBody = HTML.htmlEmailTemplate(token, Integer.toString(code));</span>
-		// TODO: HASH PASSWORD:
-<span class="nc" id="L60">		String hashed_password = BCrypt.hashpw(password, BCrypt.gensalt());</span>
+        //TODO: GENERATE RANDOM CODE:
+<span class="nc" id="L53">        Random rand = new Random();</span>
+<span class="nc" id="L54">        int bound = 123;</span>
+<span class="nc" id="L55">        int code = bound * rand.nextInt(bound);</span>
 
-		// TODO: REGISTER USER:
-<span class="nc" id="L63">		userRepository.registerUser(firstName, lastName, email, hashed_password, token, Integer.toString(code));</span>
+        //TODO: GET EMAIL HTML BODY
+<span class="nc" id="L58">        String emailBody = HTML.htmlEmailTemplate(token, Integer.toString(code));</span>
+        //TODO: HASH PASSWORD:
+<span class="nc" id="L60">        String hashed_password = BCrypt.hashpw(password, BCrypt.gensalt());</span>
 
-		// TODO: SEND EMAIL NOTIFICATION
-		try {
-<span class="nc" id="L67">			MailMessenger.htmlEmailMessenger(&quot;user@beko.com&quot;, email, &quot;Verify Account&quot;, emailBody);</span>
-		}
-<span class="nc" id="L69">		catch (MessagingException e) {</span>
-<span class="nc" id="L70">			throw new RuntimeException(e);</span>
-<span class="nc" id="L71">		}</span>
+        //TODO: REGISTER USER:
+<span class="nc" id="L63">        userRepository.registerUser(firstName, lastName, email, hashed_password, token, Integer.toString(code));</span>
 
-		// TODO: RETURN REGISTIRATION SUCCESS
-<span class="nc" id="L74">		Map&lt;String, Object&gt; response = new HashMap&lt;&gt;();</span>
-<span class="nc" id="L75">		response.put(&quot;message&quot;, &quot;Registration success. Please check your email and verify your account.&quot;);</span>
-<span class="nc" id="L76">		response.put(&quot;user&quot;, user); // veya başka verileri ekleyebilirsiniz</span>
-<span class="nc" id="L77">		return ResponseEntity.ok(response);</span>
-	}
+        //TODO: SEND EMAIL NOTIFICATION
+        try {
+<span class="nc" id="L67">            MailMessenger.htmlEmailMessenger(&quot;user@beko.com&quot;, email, &quot;Verify Account&quot;, emailBody);</span>
+<span class="nc" id="L68">        } catch (MessagingException e) {</span>
+<span class="nc" id="L69">            throw new RuntimeException(e);</span>
+<span class="nc" id="L70">        }</span>
 
+        //TODO: RETURN REGISTIRATION SUCCESS
+<span class="nc" id="L73">        Map&lt;String, Object&gt; response = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L74">        response.put(&quot;message&quot;, &quot;Registration success. Please check your email and verify your account.&quot; );</span>
+<span class="nc" id="L75">        response.put(&quot;user&quot;, user); // veya başka verileri ekleyebilirsiniz</span>
+<span class="nc" id="L76">        return ResponseEntity.ok(response);</span>
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

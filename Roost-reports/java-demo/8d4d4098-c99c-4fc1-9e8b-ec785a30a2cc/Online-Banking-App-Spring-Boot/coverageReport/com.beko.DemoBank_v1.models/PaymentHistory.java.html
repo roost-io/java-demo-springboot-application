@@ -6,99 +6,90 @@ import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = &quot;v_payments&quot;)
+@Table(name =&quot;v_payments&quot;)
 <span class="nc" id="L10">public class PaymentHistory {</span>
 
-	@Id
-	private int payment_id;
+    @Id
+    private int payment_id;
+    private int account_id;
+    private String beneficiary;
+    private String beneficiary_acc_no;
+    private double amount;
+    private String reference_no;
+    private String status;
+    private String reason_code;
+    private LocalDateTime created_at;
 
-	private int account_id;
+    public int getPayment_id() {
+<span class="nc" id="L24">        return payment_id;</span>
+    }
 
-	private String beneficiary;
+    public void setPayment_id(int payment_id) {
+<span class="nc" id="L28">        this.payment_id = payment_id;</span>
+<span class="nc" id="L29">    }</span>
 
-	private String beneficiary_acc_no;
+    public int getAccount_id() {
+<span class="nc" id="L32">        return account_id;</span>
+    }
 
-	private double amount;
+    public void setAccount_id(int account_id) {
+<span class="nc" id="L36">        this.account_id = account_id;</span>
+<span class="nc" id="L37">    }</span>
 
-	private String reference_no;
+    public String getBeneficiary() {
+<span class="nc" id="L40">        return beneficiary;</span>
+    }
 
-	private String status;
+    public void setBeneficiary(String beneficiary) {
+<span class="nc" id="L44">        this.beneficiary = beneficiary;</span>
+<span class="nc" id="L45">    }</span>
 
-	private String reason_code;
+    public String getBeneficiary_acc_no() {
+<span class="nc" id="L48">        return beneficiary_acc_no;</span>
+    }
 
-	private LocalDateTime created_at;
+    public void setBeneficiary_acc_no(String beneficiary_acc_no) {
+<span class="nc" id="L52">        this.beneficiary_acc_no = beneficiary_acc_no;</span>
+<span class="nc" id="L53">    }</span>
 
-	public int getPayment_id() {
-<span class="nc" id="L32">		return payment_id;</span>
-	}
+    public double getAmount() {
+<span class="nc" id="L56">        return amount;</span>
+    }
 
-	public void setPayment_id(int payment_id) {
-<span class="nc" id="L36">		this.payment_id = payment_id;</span>
-<span class="nc" id="L37">	}</span>
+    public void setAmount(double amount) {
+<span class="nc" id="L60">        this.amount = amount;</span>
+<span class="nc" id="L61">    }</span>
 
-	public int getAccount_id() {
-<span class="nc" id="L40">		return account_id;</span>
-	}
+    public String getReference_no() {
+<span class="nc" id="L64">        return reference_no;</span>
+    }
 
-	public void setAccount_id(int account_id) {
-<span class="nc" id="L44">		this.account_id = account_id;</span>
-<span class="nc" id="L45">	}</span>
+    public void setReference_no(String reference_no) {
+<span class="nc" id="L68">        this.reference_no = reference_no;</span>
+<span class="nc" id="L69">    }</span>
 
-	public String getBeneficiary() {
-<span class="nc" id="L48">		return beneficiary;</span>
-	}
+    public String getStatus() {
+<span class="nc" id="L72">        return status;</span>
+    }
 
-	public void setBeneficiary(String beneficiary) {
-<span class="nc" id="L52">		this.beneficiary = beneficiary;</span>
-<span class="nc" id="L53">	}</span>
+    public void setStatus(String status) {
+<span class="nc" id="L76">        this.status = status;</span>
+<span class="nc" id="L77">    }</span>
 
-	public String getBeneficiary_acc_no() {
-<span class="nc" id="L56">		return beneficiary_acc_no;</span>
-	}
+    public String getReason_code() {
+<span class="nc" id="L80">        return reason_code;</span>
+    }
 
-	public void setBeneficiary_acc_no(String beneficiary_acc_no) {
-<span class="nc" id="L60">		this.beneficiary_acc_no = beneficiary_acc_no;</span>
-<span class="nc" id="L61">	}</span>
+    public void setReason_code(String reason_code) {
+<span class="nc" id="L84">        this.reason_code = reason_code;</span>
+<span class="nc" id="L85">    }</span>
 
-	public double getAmount() {
-<span class="nc" id="L64">		return amount;</span>
-	}
+    public LocalDateTime getCreated_at() {
+<span class="nc" id="L88">        return created_at;</span>
+    }
 
-	public void setAmount(double amount) {
-<span class="nc" id="L68">		this.amount = amount;</span>
-<span class="nc" id="L69">	}</span>
-
-	public String getReference_no() {
-<span class="nc" id="L72">		return reference_no;</span>
-	}
-
-	public void setReference_no(String reference_no) {
-<span class="nc" id="L76">		this.reference_no = reference_no;</span>
-<span class="nc" id="L77">	}</span>
-
-	public String getStatus() {
-<span class="nc" id="L80">		return status;</span>
-	}
-
-	public void setStatus(String status) {
-<span class="nc" id="L84">		this.status = status;</span>
-<span class="nc" id="L85">	}</span>
-
-	public String getReason_code() {
-<span class="nc" id="L88">		return reason_code;</span>
-	}
-
-	public void setReason_code(String reason_code) {
-<span class="nc" id="L92">		this.reason_code = reason_code;</span>
-<span class="nc" id="L93">	}</span>
-
-	public LocalDateTime getCreated_at() {
-<span class="nc" id="L96">		return created_at;</span>
-	}
-
-	public void setCreated_at(LocalDateTime created_at) {
-<span class="nc" id="L100">		this.created_at = created_at;</span>
-<span class="nc" id="L101">	}</span>
-
+    public void setCreated_at(LocalDateTime created_at) {
+<span class="nc" id="L92">        this.created_at = created_at;</span>
+<span class="nc" id="L93">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -4,16 +4,15 @@ import org.springframework.http.HttpStatus;
 
 public class CustomError extends RuntimeException {
 
-	private int statusCode;
+    private int statusCode;
 
-	public CustomError(String message, int statusCode) {
-<span class="nc" id="L10">		super(message);</span>
-<span class="nc" id="L11">		this.statusCode = statusCode;</span>
-<span class="nc" id="L12">	}</span>
+    public CustomError(String message, int statusCode) {
+<span class="nc" id="L10">        super(message);</span>
+<span class="nc" id="L11">        this.statusCode = statusCode;</span>
+<span class="nc" id="L12">    }</span>
 
-	public int getStatusCode() {
-<span class="nc" id="L15">		return statusCode;</span>
-	}
-
+    public int getStatusCode() {
+<span class="nc" id="L15">        return statusCode;</span>
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -9,86 +9,81 @@ import java.time.LocalDateTime;
 @Table(name = &quot;v_transaction_history&quot;)
 <span class="nc" id="L10">public class TransactionHistory {</span>
 
-	@Id
-	private int transaction_id;
+    @Id
+    private int transaction_id;
+    private int account_id;
+    private String transaction_type;
+    private double amount;
+    private String source;
+    private String status;
+    private String reason_code;
 
-	private int account_id;
+    private LocalDateTime created_at;
 
-	private String transaction_type;
+    public LocalDateTime getCreated_at() {
+<span class="nc" id="L24">        return created_at;</span>
+    }
 
-	private double amount;
+    public void setCreated_at(LocalDateTime created_at) {
+<span class="nc" id="L28">        this.created_at = created_at;</span>
+<span class="nc" id="L29">    }</span>
 
-	private String source;
+    public int getTransaction_id() {
+<span class="nc" id="L32">        return transaction_id;</span>
+    }
 
-	private String status;
+    public void setTransaction_id(int transaction_id) {
+<span class="nc" id="L36">        this.transaction_id = transaction_id;</span>
+<span class="nc" id="L37">    }</span>
 
-	private String reason_code;
+    public int getAccount_id() {
+<span class="nc" id="L40">        return account_id;</span>
+    }
 
-	private LocalDateTime created_at;
+    public void setAccount_id(int account_id) {
+<span class="nc" id="L44">        this.account_id = account_id;</span>
+<span class="nc" id="L45">    }</span>
 
-	public LocalDateTime getCreated_at() {
-<span class="nc" id="L30">		return created_at;</span>
-	}
+    public String getTransaction_type() {
+<span class="nc" id="L48">        return transaction_type;</span>
+    }
 
-	public void setCreated_at(LocalDateTime created_at) {
-<span class="nc" id="L34">		this.created_at = created_at;</span>
-<span class="nc" id="L35">	}</span>
+    public void setTransaction_type(String transaction_type) {
+<span class="nc" id="L52">        this.transaction_type = transaction_type;</span>
+<span class="nc" id="L53">    }</span>
 
-	public int getTransaction_id() {
-<span class="nc" id="L38">		return transaction_id;</span>
-	}
+    public double getAmount() {
+<span class="nc" id="L56">        return amount;</span>
+    }
 
-	public void setTransaction_id(int transaction_id) {
-<span class="nc" id="L42">		this.transaction_id = transaction_id;</span>
-<span class="nc" id="L43">	}</span>
+    public void setAmount(double amount) {
+<span class="nc" id="L60">        this.amount = amount;</span>
+<span class="nc" id="L61">    }</span>
 
-	public int getAccount_id() {
-<span class="nc" id="L46">		return account_id;</span>
-	}
+    public String getSource() {
+<span class="nc" id="L64">        return source;</span>
+    }
 
-	public void setAccount_id(int account_id) {
-<span class="nc" id="L50">		this.account_id = account_id;</span>
-<span class="nc" id="L51">	}</span>
+    public void setSource(String source) {
+<span class="nc" id="L68">        this.source = source;</span>
+<span class="nc" id="L69">    }</span>
 
-	public String getTransaction_type() {
-<span class="nc" id="L54">		return transaction_type;</span>
-	}
+    public String getStatus() {
+<span class="nc" id="L72">        return status;</span>
+    }
 
-	public void setTransaction_type(String transaction_type) {
-<span class="nc" id="L58">		this.transaction_type = transaction_type;</span>
-<span class="nc" id="L59">	}</span>
+    public void setStatus(String status) {
+<span class="nc" id="L76">        this.status = status;</span>
+<span class="nc" id="L77">    }</span>
 
-	public double getAmount() {
-<span class="nc" id="L62">		return amount;</span>
-	}
+    public String getReason_code() {
+<span class="nc" id="L80">        return reason_code;</span>
+    }
 
-	public void setAmount(double amount) {
-<span class="nc" id="L66">		this.amount = amount;</span>
-<span class="nc" id="L67">	}</span>
+    public void setReason_code(String reason_code) {
+<span class="nc" id="L84">        this.reason_code = reason_code;</span>
+<span class="nc" id="L85">    }</span>
 
-	public String getSource() {
-<span class="nc" id="L70">		return source;</span>
-	}
-
-	public void setSource(String source) {
-<span class="nc" id="L74">		this.source = source;</span>
-<span class="nc" id="L75">	}</span>
-
-	public String getStatus() {
-<span class="nc" id="L78">		return status;</span>
-	}
-
-	public void setStatus(String status) {
-<span class="nc" id="L82">		this.status = status;</span>
-<span class="nc" id="L83">	}</span>
-
-	public String getReason_code() {
-<span class="nc" id="L86">		return reason_code;</span>
-	}
-
-	public void setReason_code(String reason_code) {
-<span class="nc" id="L90">		this.reason_code = reason_code;</span>
-<span class="nc" id="L91">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

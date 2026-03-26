@@ -6,28 +6,26 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import java.util.Properties;
 
 <span class="nc" id="L8">public class MailConfig {</span>
+    @Bean
+    public static JavaMailSenderImpl getMailConfig(){
+<span class="nc" id="L11">        JavaMailSenderImpl emailConfig = new JavaMailSenderImpl();</span>
 
-	@Bean
-	public static JavaMailSenderImpl getMailConfig() {
-<span class="nc" id="L12">		JavaMailSenderImpl emailConfig = new JavaMailSenderImpl();</span>
+        //Set Properties:
+<span class="nc" id="L14">        Properties props = emailConfig.getJavaMailProperties();</span>
+<span class="nc" id="L15">        props.put(&quot;mail.transport.protocol&quot;,&quot;smtp&quot;);</span>
+<span class="nc" id="L16">        props.put(&quot;mail.smtp.auth&quot;,&quot;true&quot;);</span>
+<span class="nc" id="L17">        props.put(&quot;mail.smtp.starttls.enable&quot;,&quot;true&quot;);</span>
+<span class="nc" id="L18">        props.put(&quot;mail.debug&quot;,&quot;true&quot;);</span>
 
-		// Set Properties:
-<span class="nc" id="L15">		Properties props = emailConfig.getJavaMailProperties();</span>
-<span class="nc" id="L16">		props.put(&quot;mail.transport.protocol&quot;, &quot;smtp&quot;);</span>
-<span class="nc" id="L17">		props.put(&quot;mail.smtp.auth&quot;, &quot;true&quot;);</span>
-<span class="nc" id="L18">		props.put(&quot;mail.smtp.starttls.enable&quot;, &quot;true&quot;);</span>
-<span class="nc" id="L19">		props.put(&quot;mail.debug&quot;, &quot;true&quot;);</span>
+        //Set Mail Credentials
+<span class="nc" id="L21">        emailConfig.setHost(&quot;localhost&quot;);</span>
+<span class="nc" id="L22">        emailConfig.setPort(25);</span>
+<span class="nc" id="L23">        emailConfig.setUsername(&quot;developer@beko.com&quot;);</span>
+<span class="nc" id="L24">        emailConfig.setPassword(&quot;1234&quot;);</span>
 
-		// Set Mail Credentials
-<span class="nc" id="L22">		emailConfig.setHost(&quot;localhost&quot;);</span>
-<span class="nc" id="L23">		emailConfig.setPort(25);</span>
-<span class="nc" id="L24">		emailConfig.setUsername(&quot;developer@beko.com&quot;);</span>
-<span class="nc" id="L25">		emailConfig.setPassword(&quot;1234&quot;);</span>
+<span class="nc" id="L26">        return emailConfig;</span>
 
-<span class="nc" id="L27">		return emailConfig;</span>
-
-	}
-	// End of Email Config Method
-
+    }
+    //End of Email Config Method
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

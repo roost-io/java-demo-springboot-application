@@ -2,14 +2,15 @@
 
 <span class="nc" id="L3">public class HTML {</span>
 
-	public static String htmlEmailTemplate(String token, String code) {
-<span class="nc" id="L6">		String url = &quot;http://127.0.0.1:8070/verify?token=&quot; + token + &quot;&amp;code=&quot; + code;</span>
-<span class="nc" id="L7">		String emailTemplate = &quot;&lt;html&gt;&lt;body&gt;&quot; + &quot;&lt;h1&gt;Hos Geldiniz!&lt;/h1&gt;&quot;</span>
-				+ &quot;&lt;p&gt;Lütfen hesabinizi doğrulamak icin aşagidaki baglantiya tiklayin:&lt;/p&gt;&quot; + &quot;&lt;a href='&quot; + url
-				+ &quot;'&gt;Hesabinizi Doğrulayin&lt;/a&gt;&quot; + &quot;&lt;/body&gt;&lt;/html&gt;&quot;;
-		;
-<span class="nc" id="L11">		return emailTemplate;</span>
-	}
-
+    public static String htmlEmailTemplate(String token, String code) {
+<span class="nc" id="L6">        String url = &quot;http://127.0.0.1:8070/verify?token=&quot; + token + &quot;&amp;code=&quot; + code;</span>
+<span class="nc" id="L7">        String emailTemplate = &quot;&lt;html&gt;&lt;body&gt;&quot; +</span>
+                &quot;&lt;h1&gt;Hos Geldiniz!&lt;/h1&gt;&quot; +
+                &quot;&lt;p&gt;Lütfen hesabinizi doğrulamak icin aşagidaki baglantiya tiklayin:&lt;/p&gt;&quot; +
+                &quot;&lt;a href='&quot; + url + &quot;'&gt;Hesabinizi Doğrulayin&lt;/a&gt;&quot; +
+                &quot;&lt;/body&gt;&lt;/html&gt;&quot;;;
+<span class="nc" id="L12">        return emailTemplate;</span>
+    }
 }
+
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -7,87 +7,82 @@ import java.time.LocalDateTime;
 
 @Entity
 <span class="nc" id="L9">public class Account {</span>
+    @Id
+    private  int account_id;
+    private int user_id;
+    private String account_number;
+    private String account_name;
+    private String account_type;
+    private BigDecimal balance;
+    private LocalDateTime create_at;
 
-	@Id
-	private int account_id;
+    public int getAccount_id() {
+<span class="nc" id="L20">        return account_id;</span>
+    }
 
-	private int user_id;
+    public void setAccount_id(int account_id) {
+<span class="nc" id="L24">        this.account_id = account_id;</span>
+<span class="nc" id="L25">    }</span>
 
-	private String account_number;
+    public int getUser_id() {
+<span class="nc" id="L28">        return user_id;</span>
+    }
 
-	private String account_name;
+    public void setUser_id(int user_id) {
+<span class="nc" id="L32">        this.user_id = user_id;</span>
+<span class="nc" id="L33">    }</span>
 
-	private String account_type;
+    public String getAccount_number() {
+<span class="nc" id="L36">        return account_number;</span>
+    }
 
-	private BigDecimal balance;
+    public void setAccount_number(String account_number) {
+<span class="nc" id="L40">        this.account_number = account_number;</span>
+<span class="nc" id="L41">    }</span>
 
-	private LocalDateTime create_at;
+    public String getAccount_name() {
+<span class="nc" id="L44">        return account_name;</span>
+    }
 
-	public int getAccount_id() {
-<span class="nc" id="L27">		return account_id;</span>
-	}
+    public void setAccount_name(String account_name) {
+<span class="nc" id="L48">        this.account_name = account_name;</span>
+<span class="nc" id="L49">    }</span>
 
-	public void setAccount_id(int account_id) {
-<span class="nc" id="L31">		this.account_id = account_id;</span>
-<span class="nc" id="L32">	}</span>
+    public String getAccount_type() {
+<span class="nc" id="L52">        return account_type;</span>
+    }
 
-	public int getUser_id() {
-<span class="nc" id="L35">		return user_id;</span>
-	}
+    public void setAccount_type(String account_type) {
+<span class="nc" id="L56">        this.account_type = account_type;</span>
+<span class="nc" id="L57">    }</span>
 
-	public void setUser_id(int user_id) {
-<span class="nc" id="L39">		this.user_id = user_id;</span>
-<span class="nc" id="L40">	}</span>
+    public BigDecimal getBalance() {
+<span class="nc" id="L60">        return balance;</span>
+    }
 
-	public String getAccount_number() {
-<span class="nc" id="L43">		return account_number;</span>
-	}
+    public void setBalance(BigDecimal balance) {
+<span class="nc" id="L64">        this.balance = balance;</span>
+<span class="nc" id="L65">    }</span>
 
-	public void setAccount_number(String account_number) {
-<span class="nc" id="L47">		this.account_number = account_number;</span>
-<span class="nc" id="L48">	}</span>
+    public LocalDateTime getCreate_at() {
+<span class="nc" id="L68">        return create_at;</span>
+    }
 
-	public String getAccount_name() {
-<span class="nc" id="L51">		return account_name;</span>
-	}
+    public void setCreate_at(LocalDateTime create_at) {
+<span class="nc" id="L72">        this.create_at = create_at;</span>
+<span class="nc" id="L73">    }</span>
 
-	public void setAccount_name(String account_name) {
-<span class="nc" id="L55">		this.account_name = account_name;</span>
-<span class="nc" id="L56">	}</span>
+    public LocalDateTime getUpdated_at() {
+<span class="nc" id="L76">        return updated_at;</span>
+    }
 
-	public String getAccount_type() {
-<span class="nc" id="L59">		return account_type;</span>
-	}
+    public void setUpdated_at(LocalDateTime updated_at) {
+<span class="nc" id="L80">        this.updated_at = updated_at;</span>
+<span class="nc" id="L81">    }</span>
 
-	public void setAccount_type(String account_type) {
-<span class="nc" id="L63">		this.account_type = account_type;</span>
-<span class="nc" id="L64">	}</span>
+    private LocalDateTime updated_at;
 
-	public BigDecimal getBalance() {
-<span class="nc" id="L67">		return balance;</span>
-	}
 
-	public void setBalance(BigDecimal balance) {
-<span class="nc" id="L71">		this.balance = balance;</span>
-<span class="nc" id="L72">	}</span>
-
-	public LocalDateTime getCreate_at() {
-<span class="nc" id="L75">		return create_at;</span>
-	}
-
-	public void setCreate_at(LocalDateTime create_at) {
-<span class="nc" id="L79">		this.create_at = create_at;</span>
-<span class="nc" id="L80">	}</span>
-
-	public LocalDateTime getUpdated_at() {
-<span class="nc" id="L83">		return updated_at;</span>
-	}
-
-	public void setUpdated_at(LocalDateTime updated_at) {
-<span class="nc" id="L87">		this.updated_at = updated_at;</span>
-<span class="nc" id="L88">	}</span>
-
-	private LocalDateTime updated_at;
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

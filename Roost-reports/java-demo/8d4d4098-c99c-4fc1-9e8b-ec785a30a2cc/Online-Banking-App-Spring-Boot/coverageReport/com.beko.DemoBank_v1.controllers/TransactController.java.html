@@ -24,279 +24,254 @@ import java.util.Map;
 @RequestMapping(&quot;/transact&quot;)
 <span class="fc" id="L25">public class TransactController {</span>
 
-	@Autowired
-	private AccountRepository accountRepository;
+    @Autowired
+    private AccountRepository accountRepository;
 
-	@Autowired
-	private PaymentRepository paymentRepository;
+    @Autowired
+    private PaymentRepository paymentRepository;
 
-	@Autowired
-	private TransactRepository transactRepository;
+    @Autowired
+    private TransactRepository transactRepository;
 
-	User user;
+    User user;
+    int user_id;
+    double currentBalance;
+    double newBalance;
+<span class="fc" id="L40">    LocalDateTime currentDateTime = LocalDateTime.now();</span>
 
-	int user_id;
+    @PostMapping(&quot;/deposit&quot;)
+    public ResponseEntity deposit(@RequestBody Map&lt;String, String&gt; requestMap, HttpSession session) {
 
-	double currentBalance;
+<span class="fc" id="L45">        String depositAmount = requestMap.get(&quot;deposit_amount&quot;);</span>
+<span class="fc" id="L46">        String accountID = requestMap.get(&quot;account_id&quot;);</span>
 
-	double newBalance;
+        //TODO: CHECK FOR EMPTY STRINGS:
+<span class="fc bfc" id="L49" title="All 4 branches covered.">        if (depositAmount.isEmpty() || accountID.isEmpty()) {</span>
+<span class="fc" id="L50">            return ResponseEntity.badRequest().body(&quot;Deposit amount and account ID cannot be empty.&quot;);</span>
+        }
 
-<span class="fc" id="L44">	LocalDateTime currentDateTime = LocalDateTime.now();</span>
+        //TODO: GET LOGGED INT USER:
 
-	@PostMapping(&quot;/deposit&quot;)
-	public ResponseEntity deposit(@RequestBody Map&lt;String, String&gt; requestMap, HttpSession session) {
+<span class="fc" id="L55">        user = (User) session.getAttribute(&quot;user&quot;);</span>
 
-<span class="fc" id="L49">		String depositAmount = requestMap.get(&quot;deposit_amount&quot;);</span>
-<span class="fc" id="L50">		String accountID = requestMap.get(&quot;account_id&quot;);</span>
 
-		// TODO: CHECK FOR EMPTY STRINGS:
-<span class="fc bfc" id="L53" title="All 4 branches covered.">		if (depositAmount.isEmpty() || accountID.isEmpty()) {</span>
-<span class="fc" id="L54">			return ResponseEntity.badRequest().body(&quot;Deposit amount and account ID cannot be empty.&quot;);</span>
-		}
+        //TODO: GET CURRENT ACCOUNT BALANCE:
+<span class="fc" id="L59">        int acc_id = Integer.parseInt(accountID);</span>
+<span class="fc" id="L60">        user_id = Integer.parseInt(user.getUser_id());</span>
 
-		// TODO: GET LOGGED INT USER:
+<span class="fc" id="L62">        double depositAmountValue = Double.parseDouble(depositAmount);</span>
 
-<span class="fc" id="L59">		user = (User) session.getAttribute(&quot;user&quot;);</span>
+        //TODO: CHECK IF DEPOSIT AMOUNT IS 0 (ZERO):
+<span class="fc bfc" id="L65" title="All 2 branches covered.">        if (depositAmountValue == 0) {</span>
+<span class="fc" id="L66">            return ResponseEntity.badRequest().body(&quot;Deposit amount cannot be zero.&quot;);</span>
+        }
 
-		// TODO: GET CURRENT ACCOUNT BALANCE:
-<span class="fc" id="L62">		int acc_id = Integer.parseInt(accountID);</span>
-<span class="fc" id="L63">		user_id = Integer.parseInt(user.getUser_id());</span>
+        //TODO: UPDATE BALANCE:
+<span class="fc" id="L70">        currentBalance = accountRepository.getAccountBalance(user_id, acc_id);</span>
+<span class="fc" id="L71">        newBalance = currentBalance + depositAmountValue;</span>
 
-<span class="fc" id="L65">		double depositAmountValue = Double.parseDouble(depositAmount);</span>
+        //Update Account:
+<span class="fc" id="L74">        accountRepository.changeAccountsBalanceById(newBalance, acc_id);</span>
 
-		// TODO: CHECK IF DEPOSIT AMOUNT IS 0 (ZERO):
-<span class="fc bfc" id="L68" title="All 2 branches covered.">		if (depositAmountValue == 0) {</span>
-<span class="fc" id="L69">			return ResponseEntity.badRequest().body(&quot;Deposit amount cannot be zero.&quot;);</span>
-		}
+        //Log Successfull Transaction:
+<span class="fc" id="L77">        transactRepository.logTransaction(acc_id, &quot;deposit&quot;, depositAmountValue, &quot;online&quot;, &quot;success&quot;, &quot;Deposit Transaction Successfull&quot;, currentDateTime);</span>
 
-		// TODO: UPDATE BALANCE:
-<span class="fc" id="L73">		currentBalance = accountRepository.getAccountBalance(user_id, acc_id);</span>
-<span class="fc" id="L74">		newBalance = currentBalance + depositAmountValue;</span>
+<span class="fc" id="L79">        Map&lt;String, Object&gt; response = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L80">        response.put(&quot;message&quot;, &quot;Amount Deposited Successfully.&quot;);</span>
+<span class="fc" id="L81">        response.put(&quot;accounts&quot;, accountRepository.getUserAccountsById(user_id)); // Token'i JSON yanıtının içine ekleyin</span>
 
-		// Update Account:
-<span class="fc" id="L77">		accountRepository.changeAccountsBalanceById(newBalance, acc_id);</span>
+<span class="fc" id="L83">        return ResponseEntity.ok(response);</span>
 
-		// Log Successfull Transaction:
-<span class="fc" id="L80">		transactRepository.logTransaction(acc_id, &quot;deposit&quot;, depositAmountValue, &quot;online&quot;, &quot;success&quot;,</span>
-				&quot;Deposit Transaction Successfull&quot;, currentDateTime);
+    }
+    //End Of Deposits.
 
-<span class="fc" id="L83">		Map&lt;String, Object&gt; response = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L84">		response.put(&quot;message&quot;, &quot;Amount Deposited Successfully.&quot;);</span>
-<span class="fc" id="L85">		response.put(&quot;accounts&quot;, accountRepository.getUserAccountsById(user_id)); // Token'i</span>
-																					// JSON
-																					// yanıtının
-																					// içine
-																					// ekleyin
+    @PostMapping(&quot;/transfer&quot;)
+    ResponseEntity transfer(@RequestBody TransferRequest request, HttpSession session) {
 
-<span class="fc" id="L91">		return ResponseEntity.ok(response);</span>
+<span class="fc" id="L91">        String transfer_from = request.getSourceAccount();</span>
+<span class="fc" id="L92">        String transfer_to = request.getTargetAccount();</span>
+<span class="fc" id="L93">        String transfer_amount = request.getAmount();</span>
 
-	}
-	// End Of Deposits.
+        //TODO: CHECK FOR EMPTY FIELDS
+<span class="fc bfc" id="L96" title="All 6 branches covered.">        if (transfer_from.isEmpty() || transfer_to.isEmpty() || transfer_amount.isEmpty()) {</span>
+<span class="fc" id="L97">            return ResponseEntity.badRequest().body(&quot;The account transferring from and to along with the amount cannot be empty!&quot;);</span>
+        }
+        //TODO: CONVERT VARIABLES:
+<span class="fc" id="L100">        int transferFromId = Integer.parseInt(transfer_from);</span>
+<span class="fc" id="L101">        int transferToId = Integer.parseInt(transfer_to);</span>
+<span class="fc" id="L102">        double transferAmount = Double.parseDouble(transfer_amount);</span>
 
-	@PostMapping(&quot;/transfer&quot;)
-	ResponseEntity transfer(@RequestBody TransferRequest request, HttpSession session) {
+        //TODO: CHECK IF TRANSFERRING INTO THE SAME ACCOUNT
+<span class="fc bfc" id="L105" title="All 2 branches covered.">        if (transferFromId == transferToId) {</span>
+<span class="fc" id="L106">            return ResponseEntity.badRequest().body(&quot;Cannot Transfer Into The Same Account, Please select the appropriate account to perform transfer.&quot;);</span>
 
-<span class="fc" id="L99">		String transfer_from = request.getSourceAccount();</span>
-<span class="fc" id="L100">		String transfer_to = request.getTargetAccount();</span>
-<span class="fc" id="L101">		String transfer_amount = request.getAmount();</span>
+        }
 
-		// TODO: CHECK FOR EMPTY FIELDS
-<span class="fc bfc" id="L104" title="All 6 branches covered.">		if (transfer_from.isEmpty() || transfer_to.isEmpty() || transfer_amount.isEmpty()) {</span>
-<span class="fc" id="L105">			return ResponseEntity.badRequest()</span>
-<span class="fc" id="L106">				.body(&quot;The account transferring from and to along with the amount cannot be empty!&quot;);</span>
-		}
-		// TODO: CONVERT VARIABLES:
-<span class="fc" id="L109">		int transferFromId = Integer.parseInt(transfer_from);</span>
-<span class="fc" id="L110">		int transferToId = Integer.parseInt(transfer_to);</span>
-<span class="fc" id="L111">		double transferAmount = Double.parseDouble(transfer_amount);</span>
+        //TODO: CHECK FOR 0 (ZERO) VALUES:
+<span class="fc bfc" id="L111" title="All 2 branches covered.">        if (transferAmount == 0) {</span>
+<span class="fc" id="L112">            return ResponseEntity.badRequest().body(&quot;Cannot Transfer an amount of 0 (Zero) value, please enter a value greater than.&quot;);</span>
+        }
 
-		// TODO: CHECK IF TRANSFERRING INTO THE SAME ACCOUNT
-<span class="fc bfc" id="L114" title="All 2 branches covered.">		if (transferFromId == transferToId) {</span>
-<span class="fc" id="L115">			return ResponseEntity.badRequest()</span>
-<span class="fc" id="L116">				.body(&quot;Cannot Transfer Into The Same Account, Please select the appropriate account to perform transfer.&quot;);</span>
+        //TODO: GET LOGGED IN USER:
+<span class="fc" id="L116">        user = (User) session.getAttribute(&quot;user&quot;);</span>
 
-		}
+        //TODO: GET CURRENT BALANCE:
+<span class="fc" id="L119">        user_id = Integer.parseInt(user.getUser_id());</span>
+<span class="fc" id="L120">        double currentBalanceOfAccountTransferringFrom = accountRepository.getAccountBalance(user_id, transferFromId);</span>
 
-		// TODO: CHECK FOR 0 (ZERO) VALUES:
-<span class="fc bfc" id="L121" title="All 2 branches covered.">		if (transferAmount == 0) {</span>
-<span class="fc" id="L122">			return ResponseEntity.badRequest()</span>
-<span class="fc" id="L123">				.body(&quot;Cannot Transfer an amount of 0 (Zero) value, please enter a value greater than.&quot;);</span>
-		}
 
-		// TODO: GET LOGGED IN USER:
-<span class="fc" id="L127">		user = (User) session.getAttribute(&quot;user&quot;);</span>
+        //TODO: CHECK IF TRANSFER AMOUNT IS MORE THAN CURRENT BALANCE:
+<span class="fc bfc" id="L124" title="All 2 branches covered.">        if (currentBalanceOfAccountTransferringFrom &lt; transferAmount) {</span>
+            //Log Failed Transaction
+<span class="fc" id="L126">            transactRepository.logTransaction(transferFromId, &quot;transfer&quot;, transferAmount, &quot;online&quot;, &quot;failed&quot;, &quot;Insufficient funds.&quot;, currentDateTime);</span>
+<span class="fc" id="L127">            return ResponseEntity.badRequest().body(&quot;You have insufficient Funds to perform this transfer.&quot;);</span>
+        }
 
-		// TODO: GET CURRENT BALANCE:
-<span class="fc" id="L130">		user_id = Integer.parseInt(user.getUser_id());</span>
-<span class="fc" id="L131">		double currentBalanceOfAccountTransferringFrom = accountRepository.getAccountBalance(user_id, transferFromId);</span>
+<span class="fc" id="L130">        double currentBalanceOfAccountTransferringTo = accountRepository.getAccountBalance(user_id, transferToId);</span>
 
-		// TODO: CHECK IF TRANSFER AMOUNT IS MORE THAN CURRENT BALANCE:
-<span class="fc bfc" id="L134" title="All 2 branches covered.">		if (currentBalanceOfAccountTransferringFrom &lt; transferAmount) {</span>
-			// Log Failed Transaction
-<span class="fc" id="L136">			transactRepository.logTransaction(transferFromId, &quot;transfer&quot;, transferAmount, &quot;online&quot;, &quot;failed&quot;,</span>
-					&quot;Insufficient funds.&quot;, currentDateTime);
-<span class="fc" id="L138">			return ResponseEntity.badRequest().body(&quot;You have insufficient Funds to perform this transfer.&quot;);</span>
-		}
+        //TODO: SET NEW BALANCE
 
-<span class="fc" id="L141">		double currentBalanceOfAccountTransferringTo = accountRepository.getAccountBalance(user_id, transferToId);</span>
+<span class="fc" id="L134">        double newBalanceOfAccountTransferringFrom = currentBalanceOfAccountTransferringFrom - transferAmount;</span>
 
-		// TODO: SET NEW BALANCE
-
-<span class="fc" id="L145">		double newBalanceOfAccountTransferringFrom = currentBalanceOfAccountTransferringFrom - transferAmount;</span>
-
-<span class="fc" id="L147">		double newBalanceOfAccountTransferringTo = currentBalanceOfAccountTransferringTo + transferAmount;</span>
-
-		// Changed The Balance Of The Account Transferring From:
-<span class="fc" id="L150">		accountRepository.changeAccountsBalanceById(newBalanceOfAccountTransferringFrom, transferFromId);</span>
-
-		// Changed The Balance Of The Account Transferring To:
-<span class="fc" id="L153">		accountRepository.changeAccountsBalanceById(newBalanceOfAccountTransferringTo, transferToId);</span>
+<span class="fc" id="L136">        double newBalanceOfAccountTransferringTo = currentBalanceOfAccountTransferringTo + transferAmount;</span>
 
-		// Log Successfull Transaction:
-<span class="fc" id="L156">		transactRepository.logTransaction(transferFromId, &quot;Transfer&quot;, transferAmount, &quot;online&quot;, &quot;success&quot;,</span>
-				&quot;Transfer Transaction Successfull&quot;, currentDateTime);
+        //Changed The Balance Of The Account Transferring From:
+<span class="fc" id="L139">        accountRepository.changeAccountsBalanceById(newBalanceOfAccountTransferringFrom, transferFromId);</span>
 
-<span class="fc" id="L159">		Map&lt;String, Object&gt; response = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L160">		response.put(&quot;message&quot;, &quot;Transfer completed successfully.&quot;);</span>
-<span class="fc" id="L161">		response.put(&quot;accounts&quot;, accountRepository.getUserAccountsById(user_id)); // Token'i</span>
-																					// JSON
-																					// yanıtının
-																					// içine
-																					// ekleyin
-
-<span class="fc" id="L167">		return ResponseEntity.ok(response);</span>
-
-	}
-	// END OF TRANSFER METHOD
-
-	@PostMapping(&quot;/withdraw&quot;)
-	ResponseEntity transfer(@RequestBody Map&lt;String, String&gt; requestMap, HttpSession session) {
-
-<span class="nc" id="L175">		String withdrawalAmount = requestMap.get(&quot;withdrawal_amount&quot;);</span>
-<span class="nc" id="L176">		String accountId = requestMap.get(&quot;account_id&quot;);</span>
-
-		// TODO: CHECK FOR EMPTY FIELDS
-<span class="nc bnc" id="L179" title="All 4 branches missed.">		if (withdrawalAmount.isEmpty() || accountId.isEmpty()) {</span>
-<span class="nc" id="L180">			return ResponseEntity.badRequest().body(&quot;Account withdrawing from and withdrawal amount cannot be empty!&quot;);</span>
-		}
-		// TODO: CONVERT VARIABLES:
-<span class="nc" id="L183">		int account_id = Integer.parseInt(accountId);</span>
-<span class="nc" id="L184">		double withdrawal_amount = Double.parseDouble(withdrawalAmount);</span>
-
-		// TODO: CHECK FOR 0 (ZERO) VALUES:
-<span class="nc bnc" id="L187" title="All 2 branches missed.">		if (withdrawal_amount == 0) {</span>
-<span class="nc" id="L188">			return ResponseEntity.badRequest().body(&quot;Withdrawal amount cannot be 0 value.&quot;);</span>
-
-		}
-
-		// TODO: GET LOGGED IN USER:
-<span class="nc" id="L193">		user = (User) session.getAttribute(&quot;user&quot;);</span>
-
-		// TODO: GET CURRENT BALANCE:
-<span class="nc" id="L196">		user_id = Integer.parseInt(user.getUser_id());</span>
-<span class="nc" id="L197">		currentBalance = accountRepository.getAccountBalance(user_id, account_id);</span>
-
-		// TODO: CHECK IF WITHDRAW AMOUNT IS MORE THAN CURRENT BALANCE:
-<span class="nc bnc" id="L200" title="All 2 branches missed.">		if (currentBalance &lt; withdrawal_amount) {</span>
-			// Log Failed Transaction
-<span class="nc" id="L202">			transactRepository.logTransaction(account_id, &quot;withdrawal&quot;, withdrawal_amount, &quot;online&quot;, &quot;failed&quot;,</span>
-					&quot;Insufficient funds.&quot;, currentDateTime);
-<span class="nc" id="L204">			return ResponseEntity.badRequest().body(&quot;You have insufficient Funds to perform this transfer.&quot;);</span>
-		}
-
-		// TODO: SET NEW BALANCE
-<span class="nc" id="L208">		double newBalance = currentBalance - withdrawal_amount;</span>
-
-		// Changed The Balance Of The Account Transferring From:
-<span class="nc" id="L211">		accountRepository.changeAccountsBalanceById(newBalance, account_id);</span>
-
-		// Withdrawal Successfull Transaction
-<span class="nc" id="L214">		transactRepository.logTransaction(account_id, &quot;Withdrawal&quot;, withdrawal_amount, &quot;online&quot;, &quot;success&quot;,</span>
-				&quot;Withdrawal Transaction Successfull&quot;, currentDateTime);
-
-<span class="nc" id="L217">		Map&lt;String, Object&gt; response = new HashMap&lt;&gt;();</span>
-<span class="nc" id="L218">		response.put(&quot;message&quot;, &quot;Withdrawal Successfull!&quot;);</span>
-<span class="nc" id="L219">		response.put(&quot;accounts&quot;, accountRepository.getUserAccountsById(user_id)); // Token'i</span>
-																					// JSON
-																					// yanıtının
-																					// içine
-																					// ekleyin
-
-<span class="nc" id="L225">		return ResponseEntity.ok(response);</span>
-
-	}
-	// End Of Withdrawal Method.
-
-	@PostMapping(&quot;/payment&quot;)
-	ResponseEntity transfer(@RequestBody PaymentRequest request, HttpSession session) {
-
-<span class="fc" id="L233">		String beneficiary = request.getBeneficiary();</span>
-<span class="fc" id="L234">		String account_number = request.getAccount_number();</span>
-<span class="fc" id="L235">		String account_id = request.getAccount_id();</span>
-<span class="fc" id="L236">		String reference = request.getReference();</span>
-<span class="fc" id="L237">		String payment_amount = request.getPayment_amount();</span>
-
-		// TODO: CHECK FOR EMPTY FIELDS
-<span class="fc bfc" id="L240" title="All 8 branches covered.">		if (beneficiary.isEmpty() || account_number.isEmpty() || account_id.isEmpty() || payment_amount.isEmpty()) {</span>
-<span class="fc" id="L241">			return ResponseEntity.badRequest()</span>
-<span class="fc" id="L242">				.body(&quot;Beneficiary, account number, account paying from and account payment amount cannot be empty.&quot;);</span>
-		}
-		// TODO: CONVERT VARIABLES:
-<span class="fc" id="L245">		int accountID = Integer.parseInt(account_id);</span>
-<span class="fc" id="L246">		double paymentAmount = Double.parseDouble(payment_amount);</span>
-
-		// TODO: CHECK FOR 0 (ZERO) VALUES:
-<span class="fc bfc" id="L249" title="All 2 branches covered.">		if (paymentAmount == 0) {</span>
-<span class="fc" id="L250">			return ResponseEntity.badRequest().body(&quot;Payment amount cannot be 0.&quot;);</span>
-
-		}
-
-		// TODO: GET LOGGED IN USER:
-<span class="fc" id="L255">		user = (User) session.getAttribute(&quot;user&quot;);</span>
-
-		// TODO: GET CURRENT BALANCE:
-<span class="fc" id="L258">		user_id = Integer.parseInt(user.getUser_id());</span>
-<span class="fc" id="L259">		currentBalance = accountRepository.getAccountBalance(user_id, accountID);</span>
-
-		// TODO: CHECK IF PAYMENT AMOUNT IS MORE THAN CURRENT BALANCE:
-<span class="fc bfc" id="L262" title="All 2 branches covered.">		if (currentBalance &lt; paymentAmount) {</span>
-<span class="fc" id="L263">			String reasonCode = &quot;Coult not Processed Payment due to insufficient funds.&quot;;</span>
-<span class="fc" id="L264">			paymentRepository.makePayment(accountID, beneficiary, account_number, paymentAmount, reference, &quot;failed&quot;,</span>
-					reasonCode, currentDateTime);
-			// Log Failed Transaction
-<span class="fc" id="L267">			transactRepository.logTransaction(accountID, &quot;Payment&quot;, paymentAmount, &quot;online&quot;, &quot;failed&quot;,</span>
-					&quot;Insufficient funds.&quot;, currentDateTime);
-<span class="fc" id="L269">			return ResponseEntity.badRequest().body(&quot;You have insufficient Funds to perform this payment.&quot;);</span>
-		}
-
-		// TODO: SET NEW BALANCE FOR ACCOUNT PAYING FROM:
-<span class="fc" id="L273">		newBalance = currentBalance - paymentAmount;</span>
-
-		// TODO: UPDATE ACCOUNT PAYING FROM:
-<span class="fc" id="L276">		accountRepository.changeAccountsBalanceById(newBalance, accountID);</span>
-
-		// TODO: MAKE PAYMENT:
-<span class="fc" id="L279">		String reasonCode = &quot;Payment Processed Successfully!&quot;;</span>
-
-<span class="fc" id="L281">		paymentRepository.makePayment(accountID, beneficiary, account_number, paymentAmount, reference, &quot;success&quot;,</span>
-				reasonCode, currentDateTime);
-
-		// Log successfull transaction:
-<span class="fc" id="L285">		transactRepository.logTransaction(accountID, &quot;Payment&quot;, paymentAmount, &quot;online&quot;, &quot;success&quot;,</span>
-				&quot;Payment Transaction Successfull&quot;, currentDateTime);
-
-<span class="fc" id="L288">		Map&lt;String, Object&gt; response = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L289">		response.put(&quot;message&quot;, reasonCode);</span>
-<span class="fc" id="L290">		response.put(&quot;accounts&quot;, accountRepository.getUserAccountsById(user_id)); // Token'i</span>
-																					// JSON
-																					// yanıtının
-																					// içine
-																					// ekleyin
-
-<span class="fc" id="L296">		return ResponseEntity.ok(response);</span>
-
-	}
-	// End Of Payment Method.
+        //Changed The Balance Of The Account Transferring To:
+<span class="fc" id="L142">        accountRepository.changeAccountsBalanceById(newBalanceOfAccountTransferringTo, transferToId);</span>
+
+        //Log Successfull Transaction:
+<span class="fc" id="L145">        transactRepository.logTransaction(transferFromId, &quot;Transfer&quot;, transferAmount, &quot;online&quot;, &quot;success&quot;, &quot;Transfer Transaction Successfull&quot;, currentDateTime);</span>
+
+<span class="fc" id="L147">        Map&lt;String, Object&gt; response = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L148">        response.put(&quot;message&quot;, &quot;Transfer completed successfully.&quot;);</span>
+<span class="fc" id="L149">        response.put(&quot;accounts&quot;, accountRepository.getUserAccountsById(user_id)); // Token'i JSON yanıtının içine ekleyin</span>
+
+<span class="fc" id="L151">        return ResponseEntity.ok(response);</span>
+
+    }
+    //END OF TRANSFER METHOD
+
+    @PostMapping(&quot;/withdraw&quot;)
+    ResponseEntity transfer(@RequestBody Map&lt;String, String&gt; requestMap, HttpSession session) {
+
+<span class="nc" id="L159">        String withdrawalAmount = requestMap.get(&quot;withdrawal_amount&quot;);</span>
+<span class="nc" id="L160">        String accountId = requestMap.get(&quot;account_id&quot;);</span>
+
+        //TODO: CHECK FOR EMPTY FIELDS
+<span class="nc bnc" id="L163" title="All 4 branches missed.">        if (withdrawalAmount.isEmpty() || accountId.isEmpty()) {</span>
+<span class="nc" id="L164">            return ResponseEntity.badRequest().body(&quot;Account withdrawing from and withdrawal amount cannot be empty!&quot;);</span>
+        }
+        //TODO: CONVERT VARIABLES:
+<span class="nc" id="L167">        int account_id = Integer.parseInt(accountId);</span>
+<span class="nc" id="L168">        double withdrawal_amount = Double.parseDouble(withdrawalAmount);</span>
+
+        //TODO: CHECK FOR 0 (ZERO) VALUES:
+<span class="nc bnc" id="L171" title="All 2 branches missed.">        if (withdrawal_amount == 0) {</span>
+<span class="nc" id="L172">            return ResponseEntity.badRequest().body(&quot;Withdrawal amount cannot be 0 value.&quot;);</span>
+
+        }
+
+        //TODO: GET LOGGED IN USER:
+<span class="nc" id="L177">        user = (User) session.getAttribute(&quot;user&quot;);</span>
+
+        //TODO: GET CURRENT BALANCE:
+<span class="nc" id="L180">        user_id = Integer.parseInt(user.getUser_id());</span>
+<span class="nc" id="L181">        currentBalance = accountRepository.getAccountBalance(user_id, account_id);</span>
+
+        //TODO: CHECK IF WITHDRAW AMOUNT IS MORE THAN CURRENT BALANCE:
+<span class="nc bnc" id="L184" title="All 2 branches missed.">        if (currentBalance &lt; withdrawal_amount) {</span>
+            //Log Failed Transaction
+<span class="nc" id="L186">            transactRepository.logTransaction(account_id, &quot;withdrawal&quot;, withdrawal_amount, &quot;online&quot;, &quot;failed&quot;, &quot;Insufficient funds.&quot;, currentDateTime);</span>
+<span class="nc" id="L187">            return ResponseEntity.badRequest().body(&quot;You have insufficient Funds to perform this transfer.&quot;);</span>
+        }
+
+        //TODO: SET NEW BALANCE
+<span class="nc" id="L191">        double newBalance = currentBalance - withdrawal_amount;</span>
+
+        //Changed The Balance Of The Account Transferring From:
+<span class="nc" id="L194">        accountRepository.changeAccountsBalanceById(newBalance, account_id);</span>
+
+
+        //Withdrawal Successfull Transaction
+<span class="nc" id="L198">        transactRepository.logTransaction(account_id, &quot;Withdrawal&quot;, withdrawal_amount,&quot;online&quot;,&quot;success&quot;,&quot;Withdrawal Transaction Successfull&quot;,currentDateTime);</span>
+
+<span class="nc" id="L200">        Map&lt;String, Object&gt; response = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L201">        response.put(&quot;message&quot;, &quot;Withdrawal Successfull!&quot;);</span>
+<span class="nc" id="L202">        response.put(&quot;accounts&quot;, accountRepository.getUserAccountsById(user_id)); // Token'i JSON yanıtının içine ekleyin</span>
+
+<span class="nc" id="L204">        return ResponseEntity.ok(response);</span>
+
+    }
+    //End Of Withdrawal Method.
+
+    @PostMapping(&quot;/payment&quot;)
+    ResponseEntity transfer(@RequestBody PaymentRequest request, HttpSession session) {
+
+<span class="fc" id="L212">        String beneficiary = request.getBeneficiary();</span>
+<span class="fc" id="L213">        String account_number = request.getAccount_number();</span>
+<span class="fc" id="L214">        String account_id = request.getAccount_id();</span>
+<span class="fc" id="L215">        String reference = request.getReference();</span>
+<span class="fc" id="L216">        String payment_amount = request.getPayment_amount();</span>
+
+
+        //TODO: CHECK FOR EMPTY FIELDS
+<span class="fc bfc" id="L220" title="All 8 branches covered.">        if (beneficiary.isEmpty() || account_number.isEmpty() || account_id.isEmpty() || payment_amount.isEmpty()) {</span>
+<span class="fc" id="L221">            return ResponseEntity.badRequest().body(&quot;Beneficiary, account number, account paying from and account payment amount cannot be empty.&quot;);</span>
+        }
+        //TODO: CONVERT VARIABLES:
+<span class="fc" id="L224">        int accountID = Integer.parseInt(account_id);</span>
+<span class="fc" id="L225">        double paymentAmount = Double.parseDouble(payment_amount);</span>
+
+        //TODO: CHECK FOR 0 (ZERO) VALUES:
+<span class="fc bfc" id="L228" title="All 2 branches covered.">        if (paymentAmount == 0) {</span>
+<span class="fc" id="L229">            return ResponseEntity.badRequest().body(&quot;Payment amount cannot be 0.&quot;);</span>
+
+        }
+
+        //TODO: GET LOGGED IN USER:
+<span class="fc" id="L234">        user = (User) session.getAttribute(&quot;user&quot;);</span>
+
+        //TODO: GET CURRENT BALANCE:
+<span class="fc" id="L237">        user_id = Integer.parseInt(user.getUser_id());</span>
+<span class="fc" id="L238">        currentBalance = accountRepository.getAccountBalance(user_id, accountID);</span>
+
+        //TODO: CHECK IF PAYMENT AMOUNT IS MORE THAN CURRENT BALANCE:
+<span class="fc bfc" id="L241" title="All 2 branches covered.">        if (currentBalance &lt; paymentAmount) {</span>
+<span class="fc" id="L242">            String reasonCode = &quot;Coult not Processed Payment due to insufficient funds.&quot;;</span>
+<span class="fc" id="L243">            paymentRepository.makePayment(accountID, beneficiary, account_number, paymentAmount, reference, &quot;failed&quot;, reasonCode, currentDateTime);</span>
+            //Log Failed Transaction
+<span class="fc" id="L245">            transactRepository.logTransaction(accountID, &quot;Payment&quot;, paymentAmount, &quot;online&quot;, &quot;failed&quot;, &quot;Insufficient funds.&quot;, currentDateTime);</span>
+<span class="fc" id="L246">            return ResponseEntity.badRequest().body(&quot;You have insufficient Funds to perform this payment.&quot;);</span>
+        }
+
+        //TODO: SET NEW BALANCE FOR ACCOUNT PAYING FROM:
+<span class="fc" id="L250">        newBalance = currentBalance - paymentAmount;</span>
+
+        //TODO: UPDATE ACCOUNT PAYING FROM:
+<span class="fc" id="L253">        accountRepository.changeAccountsBalanceById(newBalance, accountID);</span>
+
+        //TODO: MAKE PAYMENT:
+<span class="fc" id="L256">        String reasonCode = &quot;Payment Processed Successfully!&quot;;</span>
+
+<span class="fc" id="L258">        paymentRepository.makePayment(accountID, beneficiary, account_number, paymentAmount, reference, &quot;success&quot;, reasonCode, currentDateTime);</span>
+
+        //Log successfull transaction:
+<span class="fc" id="L261">        transactRepository.logTransaction(accountID, &quot;Payment&quot;, paymentAmount,&quot;online&quot;,&quot;success&quot;,&quot;Payment Transaction Successfull&quot;,currentDateTime);</span>
+
+<span class="fc" id="L263">        Map&lt;String, Object&gt; response = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L264">        response.put(&quot;message&quot;, reasonCode);</span>
+<span class="fc" id="L265">        response.put(&quot;accounts&quot;, accountRepository.getUserAccountsById(user_id)); // Token'i JSON yanıtının içine ekleyin</span>
+
+
+
+
+<span class="fc" id="L270">        return ResponseEntity.ok(response);</span>
+
+    }
+    //End Of Payment Method.
+
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
