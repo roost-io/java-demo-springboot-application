@@ -216,9 +216,12 @@ Execution:
 Validation:
   This assertion ensures that clients receive updated account information after deposit operations. The test validates that the response provides complete information needed for UI updates or further operations.
 
+
+roost_feedback [26/03/2026, 6:56:05 AM]:-\sAdd\smore\scomments\sto\sthe\stest
 */
 
 // ********RoostGPT********
+
 package com.beko.DemoBank_v1.controllers;
 
 import com.beko.DemoBank_v1.models.User;
@@ -274,33 +277,42 @@ class TransactControllerDepositTest {
 
 	@BeforeEach
 	void setUp() {
+		// Initialize the request map before each test to ensure clean state
 		requestMap = new HashMap<>();
 	}
 
 	@Test
 	@Tag("valid")
 	void successfulDepositWithValidInputs() {
-		// Arrange
+		// Test scenario: Valid deposit operation with proper amount and account ID
+		// This test verifies that a successful deposit updates the account balance,
+		// logs the transaction, and returns the correct response format
+		
+		// Arrange - Setup test data with valid deposit amount and account ID
 		requestMap.put("deposit_amount", "500.0");
 		requestMap.put("account_id", "1");
 
+		// Mock user session and account operations
 		when(session.getAttribute("user")).thenReturn(user);
 		when(user.getUser_id()).thenReturn("123");
 		when(accountRepository.getAccountBalance(123, 1)).thenReturn(1000.0);
 		when(accountRepository.getUserAccountsById(123)).thenReturn(List.of());
 
-		// Act
+		// Act - Execute the deposit operation
 		ResponseEntity<?> response = transactController.deposit(requestMap, session);
 
-		// Assert
+		// Assert - Verify successful response and proper system behavior
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		assertNotNull(response.getBody());
 
+		// Verify response body contains expected success message and accounts
 		Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
 		assertEquals("Amount Deposited Successfully.", responseBody.get("message"));
 		assertNotNull(responseBody.get("accounts"));
 
+		// Verify account balance was updated correctly (1000 + 500 = 1500)
 		verify(accountRepository).changeAccountsBalanceById(1500.0, 1);
+		// Verify transaction was logged with correct parameters
 		verify(transactRepository).logTransaction(eq(1), eq("deposit"), eq(500.0), eq("online"), eq("success"),
 				eq("Deposit Transaction Successfull"), any(LocalDateTime.class));
 	}
@@ -308,14 +320,17 @@ class TransactControllerDepositTest {
 	@Test
 	@Tag("invalid")
 	void badRequestWhenDepositAmountIsEmpty() {
-		// Arrange
+		// Test scenario: Invalid input with empty deposit amount
+		// Verifies that the system properly handles and rejects empty deposit amounts
+		
+		// Arrange - Setup request with empty deposit amount but valid account ID
 		requestMap.put("deposit_amount", "");
 		requestMap.put("account_id", "1");
 
-		// Act
+		// Act - Attempt deposit with invalid input
 		ResponseEntity<?> response = transactController.deposit(requestMap, session);
 
-		// Assert
+		// Assert - Verify proper error handling with BAD_REQUEST status
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 		assertEquals("Deposit amount and account ID cannot be empty.", response.getBody());
 	}
@@ -323,14 +338,17 @@ class TransactControllerDepositTest {
 	@Test
 	@Tag("invalid")
 	void badRequestWhenAccountIdIsEmpty() {
-		// Arrange
+		// Test scenario: Invalid input with empty account ID
+		// Ensures the system rejects requests with missing account identification
+		
+		// Arrange - Setup request with valid deposit amount but empty account ID
 		requestMap.put("deposit_amount", "500.0");
 		requestMap.put("account_id", "");
 
-		// Act
+		// Act - Attempt deposit with missing account ID
 		ResponseEntity<?> response = transactController.deposit(requestMap, session);
 
-		// Assert
+		// Assert - Verify rejection of invalid request
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 		assertEquals("Deposit amount and account ID cannot be empty.", response.getBody());
 	}
@@ -338,14 +356,17 @@ class TransactControllerDepositTest {
 	@Test
 	@Tag("invalid")
 	void badRequestWhenBothFieldsAreEmpty() {
-		// Arrange
+		// Test scenario: Complete invalid input with both required fields empty
+		// Validates comprehensive input validation for deposit requests
+		
+		// Arrange - Setup request with both required fields empty
 		requestMap.put("deposit_amount", "");
 		requestMap.put("account_id", "");
 
-		// Act
+		// Act - Attempt deposit with completely invalid input
 		ResponseEntity<?> response = transactController.deposit(requestMap, session);
 
-		// Assert
+		// Assert - Verify proper error response for missing data
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 		assertEquals("Deposit amount and account ID cannot be empty.", response.getBody());
 	}
@@ -353,17 +374,21 @@ class TransactControllerDepositTest {
 	@Test
 	@Tag("boundary")
 	void badRequestWhenDepositAmountIsZero() {
-		// Arrange
+		// Test scenario: Boundary case testing with zero deposit amount
+		// Ensures business rule that deposits must be greater than zero
+		
+		// Arrange - Setup request with zero amount (boundary case)
 		requestMap.put("deposit_amount", "0");
 		requestMap.put("account_id", "1");
 
+		// Mock user session for authentication
 		when(session.getAttribute("user")).thenReturn(user);
 		when(user.getUser_id()).thenReturn("123");
 
-		// Act
+		// Act - Attempt zero-amount deposit
 		ResponseEntity<?> response = transactController.deposit(requestMap, session);
 
-		// Assert
+		// Assert - Verify rejection of zero-amount deposits
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 		assertEquals("Deposit amount cannot be zero.", response.getBody());
 	}
@@ -371,24 +396,29 @@ class TransactControllerDepositTest {
 	@Test
 	@Tag("valid")
 	void successfulDepositWithDecimalAmount() {
-		// Arrange
+		// Test scenario: Valid deposit with decimal amount
+		// Verifies system correctly handles and processes decimal currency values
+		
+		// Arrange - Setup request with decimal deposit amount
 		requestMap.put("deposit_amount", "150.75");
 		requestMap.put("account_id", "2");
 
+		// Mock user session and account data for different user/account
 		when(session.getAttribute("user")).thenReturn(user);
 		when(user.getUser_id()).thenReturn("456");
 		when(accountRepository.getAccountBalance(456, 2)).thenReturn(1000.0);
 		when(accountRepository.getUserAccountsById(456)).thenReturn(List.of());
 
-		// Act
+		// Act - Execute deposit with decimal amount
 		ResponseEntity<?> response = transactController.deposit(requestMap, session);
 
-		// Assert
+		// Assert - Verify successful processing of decimal amounts
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 
 		Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
 		assertEquals("Amount Deposited Successfully.", responseBody.get("message"));
 
+		// Verify correct decimal calculation (1000.0 + 150.75 = 1150.75)
 		verify(accountRepository).changeAccountsBalanceById(1150.75, 2);
 		verify(transactRepository).logTransaction(eq(2), eq("deposit"), eq(150.75), eq("online"), eq("success"),
 				eq("Deposit Transaction Successfull"), any(LocalDateTime.class));
@@ -397,39 +427,50 @@ class TransactControllerDepositTest {
 	@Test
 	@Tag("integration")
 	void successfulDepositUpdatesAccountBalance() {
-		// Arrange
+		// Test scenario: Integration test focusing on account balance update
+		// Verifies that the deposit operation correctly integrates with account repository
+		
+		// Arrange - Setup standard deposit scenario
 		requestMap.put("deposit_amount", "500.0");
 		requestMap.put("account_id", "1");
 
+		// Mock all necessary dependencies
 		when(session.getAttribute("user")).thenReturn(user);
 		when(user.getUser_id()).thenReturn("123");
 		when(accountRepository.getAccountBalance(123, 1)).thenReturn(1000.0);
 		when(accountRepository.getUserAccountsById(123)).thenReturn(List.of());
 
-		// Act
+		// Act - Execute deposit operation
 		transactController.deposit(requestMap, session);
 
-		// Assert
+		// Assert - Focus on account balance integration
+		// Verify balance was updated with correct new amount
 		verify(accountRepository).changeAccountsBalanceById(1500.0, 1);
+		// Verify current balance was retrieved before update
 		verify(accountRepository).getAccountBalance(123, 1);
 	}
 
 	@Test
 	@Tag("integration")
 	void successfulDepositLogsTransaction() {
-		// Arrange
+		// Test scenario: Integration test focusing on transaction logging
+		// Ensures deposit operations are properly recorded in transaction history
+		
+		// Arrange - Setup deposit scenario with different amount and account
 		requestMap.put("deposit_amount", "300.0");
 		requestMap.put("account_id", "3");
 
+		// Mock dependencies with different test data
 		when(session.getAttribute("user")).thenReturn(user);
 		when(user.getUser_id()).thenReturn("789");
 		when(accountRepository.getAccountBalance(789, 3)).thenReturn(500.0);
 		when(accountRepository.getUserAccountsById(789)).thenReturn(List.of());
 
-		// Act
+		// Act - Execute deposit operation
 		transactController.deposit(requestMap, session);
 
-		// Assert
+		// Assert - Focus on transaction logging integration
+		// Verify transaction was logged with all correct parameters
 		verify(transactRepository).logTransaction(eq(3), eq("deposit"), eq(300.0), eq("online"), eq("success"),
 				eq("Deposit Transaction Successfull"), any(LocalDateTime.class));
 	}
@@ -437,14 +478,19 @@ class TransactControllerDepositTest {
 	@Test
 	@Tag("invalid")
 	void numberFormatExceptionWhenAccountIdIsInvalid() {
-		// Arrange
+		// Test scenario: Error handling for invalid account ID format
+		// Verifies system behavior when non-numeric account ID is provided
+		
+		// Arrange - Setup request with invalid account ID format
 		requestMap.put("deposit_amount", "500.0");
-		requestMap.put("account_id", "abc123");
+		requestMap.put("account_id", "abc123"); // Invalid non-numeric ID
 
+		// Mock user session
 		when(session.getAttribute("user")).thenReturn(user);
 		when(user.getUser_id()).thenReturn("123");
 
-		// Act & Assert
+		// Act & Assert - Verify NumberFormatException is thrown
+		// This tests the system's input validation and error handling
 		assertThrows(NumberFormatException.class, () -> {
 			transactController.deposit(requestMap, session);
 		});
@@ -453,14 +499,19 @@ class TransactControllerDepositTest {
 	@Test
 	@Tag("invalid")
 	void numberFormatExceptionWhenDepositAmountIsInvalid() {
-		// Arrange
-		requestMap.put("deposit_amount", "invalid_amount");
+		// Test scenario: Error handling for invalid deposit amount format
+		// Ensures proper exception handling when non-numeric amounts are provided
+		
+		// Arrange - Setup request with invalid deposit amount format
+		requestMap.put("deposit_amount", "invalid_amount"); // Invalid non-numeric amount
 		requestMap.put("account_id", "1");
 
+		// Mock user session
 		when(session.getAttribute("user")).thenReturn(user);
 		when(user.getUser_id()).thenReturn("123");
 
-		// Act & Assert
+		// Act & Assert - Verify NumberFormatException for invalid amount
+		// Tests numeric validation for deposit amounts
 		assertThrows(NumberFormatException.class, () -> {
 			transactController.deposit(requestMap, session);
 		});
@@ -469,13 +520,18 @@ class TransactControllerDepositTest {
 	@Test
 	@Tag("invalid")
 	void nullPointerExceptionWhenUserSessionIsInvalid() {
-		// Arrange
+		// Test scenario: Error handling for invalid user session
+		// Verifies system behavior when user is not properly authenticated
+		
+		// Arrange - Setup request with valid data but invalid session
 		requestMap.put("deposit_amount", "500.0");
 		requestMap.put("account_id", "1");
 
+		// Mock null user session (unauthenticated user)
 		when(session.getAttribute("user")).thenReturn(null);
 
-		// Act & Assert
+		// Act & Assert - Verify NullPointerException for invalid session
+		// This tests authentication validation in the deposit process
 		assertThrows(NullPointerException.class, () -> {
 			transactController.deposit(requestMap, session);
 		});
@@ -484,26 +540,33 @@ class TransactControllerDepositTest {
 	@Test
 	@Tag("integration")
 	void successfulDepositReturnsUserAccounts() {
-		// Arrange
+		// Test scenario: Integration test for account data retrieval
+		// Verifies that deposit response includes updated user account information
+		
+		// Arrange - Setup deposit with mock account data
 		requestMap.put("deposit_amount", "750.0");
 		requestMap.put("account_id", "4");
 
+		// Create mock accounts list to verify return data
 		List mockAccounts = List.of("Account1", "Account2");
 
+		// Mock all dependencies with test data
 		when(session.getAttribute("user")).thenReturn(user);
 		when(user.getUser_id()).thenReturn("999");
 		when(accountRepository.getAccountBalance(999, 4)).thenReturn(2000.0);
 		when(accountRepository.getUserAccountsById(999)).thenReturn(mockAccounts);
 
-		// Act
+		// Act - Execute deposit operation
 		ResponseEntity<?> response = transactController.deposit(requestMap, session);
 
-		// Assert
+		// Assert - Verify response includes user accounts
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 
+		// Verify accounts are included in response body
 		Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
 		assertEquals(mockAccounts, responseBody.get("accounts"));
 
+		// Verify account data was retrieved
 		verify(accountRepository).getUserAccountsById(999);
 	}
 
