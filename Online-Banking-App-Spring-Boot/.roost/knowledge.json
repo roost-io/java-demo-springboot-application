@@ -1,0 +1,632 @@
+{
+  "endpoints": [
+    {
+      "controller": "AccountController",
+      "basePath": "/account",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/account/create_account",
+          "handler": "createAccount",
+          "parameters": [
+            {
+              "in": "body",
+              "type": "object",
+              "required": true,
+              "schema": {
+                "account_name": "string",
+                "account_type": "string"
+              }
+            },
+            {
+              "in": "session",
+              "name": "user"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "User's accounts",
+              "content": "application/json"
+            },
+            "400": {
+              "description": "Account name cannot be Empty!"
+            },
+            "401": {
+              "description": "You must login first."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "controller": "AppController",
+      "basePath": "/app",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/app/dashboard",
+          "handler": "getDashboard",
+          "parameters": [
+            {
+              "in": "session",
+              "name": "user"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "User dashboard data (accounts, total balance)",
+              "content": "application/json"
+            },
+            "401": {
+              "description": "Unauthorized if not logged in"
+            }
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/app/payment_history",
+          "handler": "getPaymentHistory",
+          "parameters": [
+            {
+              "in": "session",
+              "name": "user"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Payment history as JSON",
+              "content": "application/json"
+            },
+            "401": {
+              "description": "Unauthorized if not logged in"
+            }
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/app/transaction_history",
+          "handler": "getTransactiontHistory",
+          "parameters": [
+            {
+              "in": "session",
+              "name": "user"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Transaction history as JSON",
+              "content": "application/json"
+            },
+            "401": {
+              "description": "Unauthorized if not logged in"
+            }
+          }
+        },
+        {
+          "method": "POST",
+          "path": "/app/account_transaction_history",
+          "handler": "getAccountTransactiontHistory",
+          "parameters": [
+            {
+              "in": "body",
+              "type": "object",
+              "required": true,
+              "schema": {
+                "account_id": "string"
+              }
+            },
+            {
+              "in": "session",
+              "name": "user"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Transaction history for the specified account",
+              "content": "application/json"
+            },
+            "401": {
+              "description": "Unauthorized if not logged in"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "controller": "AuthController",
+      "basePath": "",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/login",
+          "handler": "login",
+          "parameters": [
+            {
+              "in": "body",
+              "type": "object",
+              "required": true,
+              "schema": {
+                "email": "string",
+                "password": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Authentication confirmed, returns access_token (JWT)",
+              "content": "application/json"
+            },
+            "400": {
+              "description": "Username or Password Cannot Be Empty."
+            },
+            "401": {
+              "description": "Incorrect Username or Password"
+            },
+            "403": {
+              "description": "Account verification required."
+            },
+            "500": {
+              "description": "Something went wrong"
+            }
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/logout",
+          "handler": "logout",
+          "parameters": [
+            {
+              "in": "session",
+              "name": "user"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Logged out successfully."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "controller": "IndexController",
+      "basePath": "",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/",
+          "handler": "getIndex",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "Welcome message: Merhaba, Spring Boot JSON örnegi!",
+              "content": "text/plain"
+            }
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/verify",
+          "handler": "getVerify",
+          "parameters": [
+            {
+              "in": "query",
+              "name": "token",
+              "type": "string",
+              "required": true
+            },
+            {
+              "in": "query",
+              "name": "code",
+              "type": "string",
+              "required": true
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Verification success.",
+              "content": "application/json"
+            },
+            "400": {
+              "description": "This session has expire."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "controller": "RegisterController",
+      "basePath": "",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/register",
+          "handler": "registerUser",
+          "parameters": [
+            {
+              "in": "body",
+              "type": "object",
+              "required": true,
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            },
+            {
+              "in": "query",
+              "name": "confirm_password",
+              "type": "string",
+              "required": true
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Registration success. Please check your email and verify your account.",
+              "content": "application/json"
+            },
+            "400": {
+              "description": "Validation errors or password mismatch."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "controller": "TransactController",
+      "basePath": "/transact",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/transact/deposit",
+          "handler": "deposit",
+          "parameters": [
+            {
+              "in": "body",
+              "type": "object",
+              "required": true,
+              "schema": {
+                "deposit_amount": "string",
+                "account_id": "string"
+              }
+            },
+            {
+              "in": "session",
+              "name": "user"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Amount deposited and updated accounts list",
+              "content": "application/json"
+            },
+            "400": {
+              "description": "Deposit amount and account ID cannot be empty or zero"
+            },
+            "401": {
+              "description": "Unauthorized if not logged in"
+            }
+          }
+        },
+        {
+          "method": "POST",
+          "path": "/transact/transfer",
+          "handler": "transfer (transfer)",
+          "parameters": [
+            {
+              "in": "body",
+              "type": "object",
+              "required": true,
+              "schema": {
+                "$ref": "#/components/schemas/TransferRequest"
+              }
+            },
+            {
+              "in": "session",
+              "name": "user"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Transfer completed and updated accounts list",
+              "content": "application/json"
+            },
+            "400": {
+              "description": "Invalid fields, zero/negative values, insufficient funds, or transfer between same account"
+            },
+            "401": {
+              "description": "Unauthorized if not logged in"
+            }
+          }
+        },
+        {
+          "method": "POST",
+          "path": "/transact/withdraw",
+          "handler": "transfer (withdraw)",
+          "parameters": [
+            {
+              "in": "body",
+              "type": "object",
+              "required": true,
+              "schema": {
+                "withdrawal_amount": "string",
+                "account_id": "string"
+              }
+            },
+            {
+              "in": "session",
+              "name": "user"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Withdrawal successful and updated accounts list",
+              "content": "application/json"
+            },
+            "400": {
+              "description": "Invalid input, zero/negative values, or insufficient funds"
+            },
+            "401": {
+              "description": "Unauthorized if not logged in"
+            }
+          }
+        },
+        {
+          "method": "POST",
+          "path": "/transact/payment",
+          "handler": "transfer (payment)",
+          "parameters": [
+            {
+              "in": "body",
+              "type": "object",
+              "required": true,
+              "schema": {
+                "$ref": "#/components/schemas/PaymentRequest"
+              }
+            },
+            {
+              "in": "session",
+              "name": "user"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Payment processed and updated accounts list",
+              "content": "application/json"
+            },
+            "400": {
+              "description": "Invalid data or insufficient funds"
+            },
+            "401": {
+              "description": "Unauthorized if not logged in"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "models": [
+    {
+      "name": "Account",
+      "type": "Entity",
+      "fields": [
+        {
+          "name": "account_id",
+          "type": "int"
+        },
+        {
+          "name": "user_id",
+          "type": "int"
+        },
+        {
+          "name": "account_number",
+          "type": "String"
+        },
+        {
+          "name": "account_name",
+          "type": "String"
+        },
+        {
+          "name": "account_type",
+          "type": "String"
+        },
+        {
+          "name": "balance",
+          "type": "BigDecimal"
+        },
+        {
+          "name": "create_at",
+          "type": "LocalDateTime"
+        },
+        {
+          "name": "updated_at",
+          "type": "LocalDateTime"
+        }
+      ]
+    },
+    {
+      "name": "Payment",
+      "type": "Entity",
+      "fields": [
+        {
+          "name": "payment_id",
+          "type": "int"
+        },
+        {
+          "name": "account_id",
+          "type": "int"
+        },
+        {
+          "name": "beneficiary",
+          "type": "String"
+        },
+        {
+          "name": "beneficiary_acc_no",
+          "type": "String"
+        },
+        {
+          "name": "amount",
+          "type": "double"
+        },
+        {
+          "name": "reference_no",
+          "type": "String"
+        },
+        {
+          "name": "status",
+          "type": "String"
+        },
+        {
+          "name": "reason_code",
+          "type": "String"
+        },
+        {
+          "name": "created_at",
+          "type": "LocalDateTime"
+        }
+      ]
+    },
+    {
+      "name": "PaymentHistory",
+      "type": "Entity (View)",
+      "fields": [
+        {
+          "name": "payment_id",
+          "type": "int"
+        },
+        {
+          "name": "account_id",
+          "type": "int"
+        },
+        {
+          "name": "beneficiary",
+          "type": "String"
+        },
+        {
+          "name": "beneficiary_acc_no",
+          "type": "String"
+        },
+        {
+          "name": "amount",
+          "type": "double"
+        },
+        {
+          "name": "reference_no",
+          "type": "String"
+        },
+        {
+          "name": "status",
+          "type": "String"
+        },
+        {
+          "name": "reason_code",
+          "type": "String"
+        },
+        {
+          "name": "created_at",
+          "type": "LocalDateTime"
+        }
+      ]
+    },
+    {
+      "name": "PaymentRequest",
+      "type": "DTO",
+      "fields": [
+        {
+          "name": "beneficiary",
+          "type": "String"
+        },
+        {
+          "name": "account_number",
+          "type": "String"
+        },
+        {
+          "name": "account_id",
+          "type": "String"
+        },
+        {
+          "name": "reference",
+          "type": "String"
+        },
+        {
+          "name": "payment_amount",
+          "type": "String"
+        }
+      ]
+    }
+  ],
+  "dependencies": [],
+  "businessFlows": [],
+  "language": "java",
+  "buildTool": "maven",
+  "framework": "spring-boot",
+  "projectStructure": [
+    "[DIR] .mvn/",
+    "  [DIR] wrapper/",
+    "    [FILE] maven-wrapper.jar",
+    "    [FILE] maven-wrapper.properties",
+    "[DIR] src/",
+    "  [DIR] main/",
+    "    [DIR] java/",
+    "      [DIR] com/",
+    "        [DIR] beko/",
+    "          [DIR] DemoBank_v1/",
+    "            [DIR] config/",
+    "              [FILE] AppConfig.java",
+    "              [FILE] MailConfig.java",
+    "            [DIR] controller_advisor/",
+    "              [FILE] AdvisorController.java",
+    "            [DIR] controllers/",
+    "              [FILE] AccountController.java",
+    "              [FILE] AppController.java",
+    "              [FILE] AuthController.java",
+    "              [FILE] IndexController.java",
+    "              [FILE] RegisterController.java",
+    "              [FILE] TransactController.java",
+    "            [DIR] exception/",
+    "              [FILE] CustomError.java",
+    "              [FILE] GlobalExceptionHandler.java",
+    "            [DIR] helpers/",
+    "              [DIR] authorization/",
+    "                [FILE] JwtService.java",
+    "              [FILE] GenAccountNumber.java",
+    "              [FILE] HTML.java",
+    "              [FILE] Token.java",
+    "            [DIR] interceptors/",
+    "              [FILE] AppInterceptor.java",
+    "            [DIR] mailMessenger/",
+    "              [FILE] MailMessenger.java",
+    "            [DIR] models/",
+    "              [FILE] Account.java",
+    "              [FILE] Payment.java",
+    "              [FILE] PaymentHistory.java",
+    "              [FILE] PaymentRequest.java",
+    "              [FILE] Transact.java",
+    "              [FILE] TransactionHistory.java",
+    "              [FILE] TransferRequest.java",
+    "              [FILE] User.java",
+    "            [DIR] repository/",
+    "              [FILE] AccountRepository.java",
+    "              [FILE] PaymentHistoryRepository.java",
+    "              [FILE] PaymentRepository.java",
+    "              [FILE] TransactHistoryRepository.java",
+    "              [FILE] TransactRepository.java",
+    "              [FILE] UserRepository.java",
+    "            [FILE] DemoBankV1Application.java",
+    "    [DIR] resources/",
+    "      [FILE] application.properties",
+    "    [DIR] webapp/",
+    "      [DIR] WEB-INF/",
+    "        [DIR] jsp/",
+    "          [FILE] index.jsp",
+    "  [DIR] test/",
+    "    [DIR] java/",
+    "      [DIR] com/",
+    "        [DIR] beko/",
+    "          [DIR] DemoBank_v1/",
+    "            [FILE] DemoBankV1ApplicationTests.java",
+    "[FILE] .gitignore",
+    "[FILE] mvnw",
+    "[FILE] mvnw.cmd",
+    "[FILE] pom.xml",
+    "[FILE] README.md"
+  ]
+}
