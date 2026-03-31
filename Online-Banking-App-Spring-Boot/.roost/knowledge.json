@@ -1,0 +1,575 @@
+{
+  "endpoints": [
+    {
+      "controller": "AccountController",
+      "classAnnotations": [
+        "@Controller",
+        "@RequestMapping(\"/account\")"
+      ],
+      "method": "POST",
+      "path": "/account/create_account",
+      "handler": "createAccount",
+      "parameters": [
+        {
+          "in": "body",
+          "name": "requestMap",
+          "type": "Map<String, String>",
+          "description": "Expected keys: account_name, account_type"
+        },
+        {
+          "in": "session",
+          "name": "user",
+          "type": "User",
+          "description": "Retrieved from session attribute"
+        }
+      ],
+      "response": "200 OK with user accounts, 400 Bad Request if missing fields, 401 Unauthorized if not logged in",
+      "responseType": "ResponseEntity"
+    },
+    {
+      "controller": "AppController",
+      "classAnnotations": [
+        "@Controller",
+        "@RequestMapping(\"/app\")"
+      ],
+      "method": "GET",
+      "path": "/app/dashboard",
+      "handler": "getDashboard",
+      "parameters": [
+        {
+          "in": "session",
+          "name": "user",
+          "type": "User",
+          "description": "Retrieved from session attribute"
+        }
+      ],
+      "response": "200 OK with userAccounts and totalBalance in JSON",
+      "responseType": "ResponseEntity<Map<String, Object>>"
+    },
+    {
+      "controller": "AppController",
+      "classAnnotations": [
+        "@Controller",
+        "@RequestMapping(\"/app\")"
+      ],
+      "method": "GET",
+      "path": "/app/payment_history",
+      "handler": "getPaymentHistory",
+      "parameters": [
+        {
+          "in": "session",
+          "name": "user",
+          "type": "User",
+          "description": "Retrieved from session attribute"
+        }
+      ],
+      "response": "200 OK with payment_history array in JSON",
+      "responseType": "ResponseEntity<Map<String, List>>"
+    },
+    {
+      "controller": "AppController",
+      "classAnnotations": [
+        "@Controller",
+        "@RequestMapping(\"/app\")"
+      ],
+      "method": "GET",
+      "path": "/app/transaction_history",
+      "handler": "getTransactiontHistory",
+      "parameters": [
+        {
+          "in": "session",
+          "name": "user",
+          "type": "User",
+          "description": "Retrieved from session attribute"
+        }
+      ],
+      "response": "200 OK with transaction_history array in JSON",
+      "responseType": "ResponseEntity<Map<String, List>>"
+    },
+    {
+      "controller": "AppController",
+      "classAnnotations": [
+        "@Controller",
+        "@RequestMapping(\"/app\")"
+      ],
+      "method": "POST",
+      "path": "/app/account_transaction_history",
+      "handler": "getAccountTransactiontHistory",
+      "parameters": [
+        {
+          "in": "body",
+          "name": "requestMap",
+          "type": "Map<String, String>",
+          "description": "Expected key: account_id"
+        },
+        {
+          "in": "session",
+          "name": "user",
+          "type": "User",
+          "description": "Retrieved from session (not explicitly used in handler, but consistent with other endpoints)"
+        }
+      ],
+      "response": "200 OK with transaction_history array in JSON",
+      "responseType": "ResponseEntity<Map<String, List>>"
+    },
+    {
+      "controller": "AuthController",
+      "classAnnotations": [
+        "@Controller"
+      ],
+      "method": "POST",
+      "path": "/login",
+      "handler": "login",
+      "parameters": [
+        {
+          "in": "body",
+          "name": "requestMap",
+          "type": "Map<String, String>",
+          "description": "Expected keys: email, password"
+        },
+        {
+          "in": "session",
+          "name": "session",
+          "type": "HttpSession",
+          "description": "Session object for user login state"
+        }
+      ],
+      "response": "200 OK with access_token and message; 400 if missing fields; 401 Unauthorized if bad credentials; 403 if account not verified; 500 if email not found",
+      "responseType": "ResponseEntity<Map<String, Object>>"
+    },
+    {
+      "controller": "AuthController",
+      "classAnnotations": [
+        "@Controller"
+      ],
+      "method": "GET",
+      "path": "/logout",
+      "handler": "logout",
+      "parameters": [
+        {
+          "in": "session",
+          "name": "session",
+          "type": "HttpSession",
+          "description": "Session object for user."
+        }
+      ],
+      "response": "200 OK with logout confirmation message.",
+      "responseType": "ResponseEntity<String>"
+    },
+    {
+      "controller": "IndexController",
+      "classAnnotations": [
+        "@RestController"
+      ],
+      "method": "GET",
+      "path": "/",
+      "handler": "getIndex",
+      "parameters": [],
+      "response": "200 OK with welcome string message",
+      "responseType": "String"
+    },
+    {
+      "controller": "IndexController",
+      "classAnnotations": [
+        "@RestController"
+      ],
+      "method": "GET",
+      "path": "/verify",
+      "handler": "getVerify",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "token",
+          "type": "String",
+          "description": "Verification token"
+        },
+        {
+          "in": "query",
+          "name": "code",
+          "type": "String",
+          "description": "Verification code"
+        }
+      ],
+      "response": "200 OK with verification success JSON; 400 if token invalid",
+      "responseType": "ResponseEntity<Map<String, Object>>"
+    },
+    {
+      "controller": "RegisterController",
+      "classAnnotations": [
+        "@RestController"
+      ],
+      "method": "POST",
+      "path": "/register",
+      "handler": "registerUser",
+      "parameters": [
+        {
+          "in": "body",
+          "name": "user",
+          "type": "User",
+          "description": "User registration object, must have first_name, last_name, email, password"
+        },
+        {
+          "in": "query",
+          "name": "confirm_password",
+          "type": "String",
+          "description": "Repeat of password for confirmation"
+        }
+      ],
+      "response": "200 OK with message and user; 400 for validation errors or password mismatch",
+      "responseType": "ResponseEntity<Map<String, Object> or List<String>>"
+    },
+    {
+      "controller": "TransactController",
+      "classAnnotations": [
+        "@Controller",
+        "@RequestMapping(\"/transact\")"
+      ],
+      "method": "POST",
+      "path": "/transact/deposit",
+      "handler": "deposit",
+      "parameters": [
+        {
+          "in": "body",
+          "name": "requestMap",
+          "type": "Map<String, String>",
+          "description": "Expected keys: deposit_amount, account_id"
+        },
+        {
+          "in": "session",
+          "name": "user",
+          "type": "User",
+          "description": "Retrieved from session attribute"
+        }
+      ],
+      "response": "200 OK with message and user accounts; 400 for missing/zero fields; 401 if not logged in",
+      "responseType": "ResponseEntity<Map<String, Object>>"
+    },
+    {
+      "controller": "TransactController",
+      "classAnnotations": [
+        "@Controller",
+        "@RequestMapping(\"/transact\")"
+      ],
+      "method": "POST",
+      "path": "/transact/transfer",
+      "handler": "transfer",
+      "parameters": [
+        {
+          "in": "body",
+          "name": "request",
+          "type": "TransferRequest",
+          "description": "Source and target account and amount"
+        },
+        {
+          "in": "session",
+          "name": "user",
+          "type": "User",
+          "description": "Retrieved from session attribute"
+        }
+      ],
+      "response": "200 OK with message and user accounts; 400 for invalid/insufficient/missing fields; failed logs on insufficient funds",
+      "responseType": "ResponseEntity<Map<String, Object>>"
+    },
+    {
+      "controller": "TransactController",
+      "classAnnotations": [
+        "@Controller",
+        "@RequestMapping(\"/transact\")"
+      ],
+      "method": "POST",
+      "path": "/transact/withdraw",
+      "handler": "transfer",
+      "parameters": [
+        {
+          "in": "body",
+          "name": "requestMap",
+          "type": "Map<String, String>",
+          "description": "Expected keys: withdrawal_amount, account_id"
+        },
+        {
+          "in": "session",
+          "name": "user",
+          "type": "User",
+          "description": "Retrieved from session attribute"
+        }
+      ],
+      "response": "200 OK with message and user accounts; 400 for missing/zero/insufficient fields/funds",
+      "responseType": "ResponseEntity<Map<String, Object>>"
+    },
+    {
+      "controller": "TransactController",
+      "classAnnotations": [
+        "@Controller",
+        "@RequestMapping(\"/transact\")"
+      ],
+      "method": "POST",
+      "path": "/transact/payment",
+      "handler": "transfer",
+      "parameters": [
+        {
+          "in": "body",
+          "name": "request",
+          "type": "PaymentRequest",
+          "description": "Expected: beneficiary, account_number, account_id, payment_amount, reference"
+        },
+        {
+          "in": "session",
+          "name": "user",
+          "type": "User",
+          "description": "Retrieved from session attribute"
+        }
+      ],
+      "response": "200 OK with message and user accounts; 400 for missing/zero/insufficient fields/funds; failed logs on insufficient funds",
+      "responseType": "ResponseEntity<Map<String, Object>>"
+    }
+  ],
+  "models": [
+    {
+      "name": "Account",
+      "annotations": [
+        "@Entity"
+      ],
+      "fields": [
+        {
+          "name": "account_id",
+          "type": "int",
+          "annotations": [
+            "@Id"
+          ]
+        },
+        {
+          "name": "user_id",
+          "type": "int"
+        },
+        {
+          "name": "account_number",
+          "type": "String"
+        },
+        {
+          "name": "account_name",
+          "type": "String"
+        },
+        {
+          "name": "account_type",
+          "type": "String"
+        },
+        {
+          "name": "balance",
+          "type": "BigDecimal"
+        },
+        {
+          "name": "create_at",
+          "type": "LocalDateTime"
+        },
+        {
+          "name": "updated_at",
+          "type": "LocalDateTime"
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "annotations": [
+        "@Entity"
+      ],
+      "fields": [
+        {
+          "name": "user_id",
+          "type": "String",
+          "annotations": [
+            "@Id"
+          ]
+        },
+        {
+          "name": "first_name",
+          "type": "String",
+          "annotations": [
+            "@NotEmpty",
+            "@Size(min=3)"
+          ]
+        },
+        {
+          "name": "last_name",
+          "type": "String",
+          "annotations": [
+            "@NotEmpty",
+            "@Size(min=3)"
+          ]
+        },
+        {
+          "name": "email",
+          "type": "String",
+          "annotations": [
+            "@Email",
+            "@NotEmpty",
+            "@Pattern"
+          ]
+        },
+        {
+          "name": "password",
+          "type": "String",
+          "annotations": [
+            "@NotEmpty",
+            "@NotNull"
+          ]
+        },
+        {
+          "name": "token",
+          "type": "String"
+        },
+        {
+          "name": "code",
+          "type": "String"
+        },
+        {
+          "name": "verified",
+          "type": "int"
+        },
+        {
+          "name": "verified_at",
+          "type": "LocalDate"
+        },
+        {
+          "name": "create_at",
+          "type": "LocalDateTime"
+        },
+        {
+          "name": "updated_at",
+          "type": "LocalDateTime"
+        }
+      ],
+      "validation": {
+        "first_name": "Not empty, min 3 chars",
+        "last_name": "Not empty, min 3 chars",
+        "email": "Valid email address, not empty, valid pattern",
+        "password": "Not empty"
+      }
+    },
+    {
+      "name": "Payment",
+      "annotations": [
+        "@Entity"
+      ],
+      "fields": [
+        {
+          "name": "payment_id",
+          "type": "int",
+          "annotations": [
+            "@Id"
+          ]
+        },
+        {
+          "name": "account_id",
+          "type": "int"
+        },
+        {
+          "name": "beneficiary",
+          "type": "String"
+        },
+        {
+          "name": "beneficiary_acc_no",
+          "type": "String"
+        },
+        {
+          "name": "amount",
+          "type": "double"
+        },
+        {
+          "name": "reference_no",
+          "type": "String"
+        },
+        {
+          "name": "status",
+          "type": "String"
+        },
+        {
+          "name": "reason_code",
+          "type": "String"
+        },
+        {
+          "name": "created_at",
+          "type": "LocalDateTime"
+        }
+      ]
+    },
+    {
+      "name": "PaymentHistory",
+      "annotations": [
+        "@Entity",
+        "@Table(name =\"v_payments\")"
+      ],
+      "fields": [
+        {
+          "name": "payment_id",
+          "type": "int",
+          "annotations": [
+            "@Id"
+          ]
+        },
+        {
+          "name": "account_id",
+          "type": "int"
+        },
+        {
+          "name": "beneficiary",
+          "type": "String"
+        },
+        {
+          "name": "beneficiary_acc_no",
+          "type": "String"
+        },
+        {
+          "name": "amount",
+          "type": "double"
+        },
+        {
+          "name": "reference_no",
+          "type": "String"
+        },
+        {
+          "name": "status",
+          "type": "String"
+        },
+        {
+          "name": "reason_code",
+          "type": "String"
+        },
+        {
+          "name": "created_at",
+          "type": "LocalDateTime"
+        }
+      ]
+    }
+  ],
+  "dependencies": [],
+  "businessFlows": [],
+  "language": {
+    "language": "java"
+  },
+  "buildTool": {
+    "buildTool": "maven"
+  },
+  "framework": {
+    "framework": "spring-boot"
+  },
+  "projectStructure": {
+    "structure": [
+      ".mvn/wrapper/",
+      "src/main/java/com/beko/DemoBank_v1/config/",
+      "src/main/java/com/beko/DemoBank_v1/controller_advisor/",
+      "src/main/java/com/beko/DemoBank_v1/controllers/",
+      "src/main/java/com/beko/DemoBank_v1/exception/",
+      "src/main/java/com/beko/DemoBank_v1/helpers/",
+      "src/main/java/com/beko/DemoBank_v1/interceptors/",
+      "src/main/java/com/beko/DemoBank_v1/mailMessenger/",
+      "src/main/java/com/beko/DemoBank_v1/models/",
+      "src/main/java/com/beko/DemoBank_v1/repository/",
+      "src/main/java/com/beko/DemoBank_v1/DemoBankV1Application.java",
+      "src/main/resources/application.properties",
+      "src/main/webapp/WEB-INF/jsp/index.jsp",
+      "src/test/java/com/beko/DemoBank_v1/DemoBankV1ApplicationTests.java",
+      "pom.xml",
+      "README.md"
+    ]
+  }
+}
