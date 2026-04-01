@@ -1,0 +1,167 @@
+[
+  {
+    "type": "functional",
+    "title": "Fetch JIRA Details with Valid Credentials",
+    "description": "Verify successful retrieval of JIRA details using valid credentials.",
+    "testId": "TC-001",
+    "testDescription": "A user triggers a test suite with valid JIRA credentials to fetch details.",
+    "prerequisites": "Valid JIRA credentials must be configured in the system.",
+    "stepsToPerform": "1. Navigate to Roost.ai platform.\n2. Trigger the test suite.\n3. Monitor the API request to JIRA.\n4. Validate the response.",
+    "expectedResult": "JIRA details are successfully retrieved and displayed on the platform.",
+    "assumptions": "ASSUMPTION: Network connectivity to JIRA is stable."
+  },
+  {
+    "type": "functional",
+    "title": "Handle 404 Error on JIRA API Request",
+    "description": "Ensure proper error handling and messaging when a 404 error occurs during JIRA API request.",
+    "testId": "TC-002",
+    "testDescription": "A user triggers a test suite and encounters a 404 error while fetching JIRA details.",
+    "prerequisites": "JIRA credentials are valid, but the JIRA ID does not exist.",
+    "stepsToPerform": "1. Navigate to Roost.ai platform.\n2. Trigger the test suite with a non-existent JIRA ID.\n3. Monitor the API request to JIRA.\n4. Capture and validate the error message.",
+    "expectedResult": "System displays a clear error message indicating a 404 error for the JIRA ID.",
+    "assumptions": "ASSUMPTION: Error messages are user-friendly and informative."
+  },
+  {
+    "type": "functional",
+    "title": "Data Validation for JIRA Credentials",
+    "description": "Validate the correctness of JIRA credentials before making API requests.",
+    "testId": "TC-003",
+    "testDescription": "A user inputs JIRA credentials and triggers a test suite to ensure credentials are validated.",
+    "prerequisites": "Access to the Roost.ai platform with an option to input JIRA credentials.",
+    "stepsToPerform": "1. Navigate to Roost.ai platform.\n2. Input JIRA credentials.\n3. Trigger the test suite.\n4. Validate that credentials are checked before API request.",
+    "expectedResult": "System validates credentials and proceeds only if they are correct.",
+    "assumptions": "ASSUMPTION: Credential validation logic is implemented correctly."
+  },
+  {
+    "type": "functional",
+    "title": "Workflow State Transitions for Test Execution",
+    "description": "Verify correct state transitions during test suite execution and result retrieval.",
+    "testId": "TC-004",
+    "testDescription": "A user triggers a test suite and observes the workflow state transitions.",
+    "prerequisites": "A configured test suite on the Roost.ai platform.",
+    "stepsToPerform": "1. Navigate to Roost.ai platform.\n2. Trigger the test suite.\n3. Monitor state transitions from initiation to completion.\n4. Retrieve and review test results.",
+    "expectedResult": "Workflow transitions through all expected states and results are accurately retrieved.",
+    "assumptions": "ASSUMPTION: State transition logic is implemented as per design."
+  },
+  {
+    "type": "functional",
+    "title": "UI Interaction for Triggering Test Suites",
+    "description": "Ensure the UI allows users to trigger test suites and view results effectively.",
+    "testId": "TC-005",
+    "testDescription": "A user interacts with the UI to trigger a test suite and view the results.",
+    "prerequisites": "Access to the Roost.ai platform with test suites configured.",
+    "stepsToPerform": "1. Navigate to Roost.ai platform.\n2. Select a test suite to trigger.\n3. Execute the test suite.\n4. View and interpret the results displayed on the UI.",
+    "expectedResult": "Users can trigger test suites and view results without issues.",
+    "assumptions": "ASSUMPTION: UI is intuitive and responsive."
+  },
+  {
+    "type": "functional",
+    "title": "Boundary Value Analysis for API Request Parameters",
+    "description": "Test the API request parameters for boundary values to ensure robustness.",
+    "testId": "TC-006",
+    "testDescription": "A user triggers a test suite with boundary values for API request parameters to check system behavior.",
+    "prerequisites": "Access to the Roost.ai platform with configurable API request parameters.",
+    "stepsToPerform": "1. Navigate to Roost.ai platform.\n2. Configure API request parameters with boundary values.\n3. Trigger the test suite.\n4. Monitor the API request and response.",
+    "expectedResult": "System handles boundary values correctly without errors.",
+    "assumptions": "ASSUMPTION: API supports boundary value testing."
+  },
+  {
+    "type": "functional",
+    "title": "Error Classification for HTTP Errors",
+    "description": "Verify the system's ability to classify and handle different HTTP errors.",
+    "testId": "TC-007",
+    "testDescription": "A user triggers a test suite and encounters various HTTP errors to validate error classification.",
+    "prerequisites": "Access to the Roost.ai platform with error simulation capabilities.",
+    "stepsToPerform": "1. Navigate to Roost.ai platform.\n2. Simulate different HTTP errors (e.g., 400, 500).\n3. Trigger the test suite.\n4. Capture and validate error classifications.",
+    "expectedResult": "System correctly classifies and handles each HTTP error.",
+    "assumptions": "ASSUMPTION: Error simulation tools are available."
+  },
+  {
+    "type": "functional",
+    "title": "Data Integrity Check for JIRA Response Handling",
+    "description": "Ensure data integrity when handling responses from JIRA.",
+    "testId": "TC-008",
+    "testDescription": "A user triggers a test suite to verify data integrity of JIRA responses.",
+    "prerequisites": "Valid JIRA credentials and access to the Roost.ai platform.",
+    "stepsToPerform": "1. Navigate to Roost.ai platform.\n2. Trigger the test suite.\n3. Monitor the API response from JIRA.\n4. Validate data integrity of the response.",
+    "expectedResult": "Data integrity is maintained in JIRA responses.",
+    "assumptions": "ASSUMPTION: JIRA API responses are consistent."
+  },
+  {
+    "type": "functional",
+    "title": "State Transition Testing for Workflow Stages",
+    "description": "Test the workflow stages for correct state transitions during test execution.",
+    "testId": "TC-009",
+    "testDescription": "A user triggers a test suite and verifies state transitions across workflow stages.",
+    "prerequisites": "A configured test suite with defined workflow stages on the Roost.ai platform.",
+    "stepsToPerform": "1. Navigate to Roost.ai platform.\n2. Trigger the test suite.\n3. Observe state transitions from start to finish.\n4. Validate each state transition.",
+    "expectedResult": "Workflow transitions through all defined stages correctly.",
+    "assumptions": "ASSUMPTION: Workflow stages are clearly defined."
+  },
+  {
+    "type": "functional",
+    "title": "UI Feedback for Error Handling",
+    "description": "Ensure the UI provides appropriate feedback when errors occur during test execution.",
+    "testId": "TC-010",
+    "testDescription": "A user interacts with the UI to trigger a test suite and observes feedback on errors.",
+    "prerequisites": "Access to the Roost.ai platform with error-prone test suites.",
+    "stepsToPerform": "1. Navigate to Roost.ai platform.\n2. Trigger a test suite known to produce errors.\n3. Observe UI feedback during and after execution.\n4. Validate the clarity and usefulness of feedback.",
+    "expectedResult": "UI provides clear and actionable feedback for errors.",
+    "assumptions": "ASSUMPTION: UI is designed to handle error feedback."
+  },
+  {
+    "type": "functional",
+    "title": "Error Logging for Failed JIRA API Requests",
+    "description": "Verify that errors are logged appropriately when JIRA API requests fail.",
+    "testId": "TC-011",
+    "testDescription": "A user triggers a test suite and encounters a failed JIRA API request, ensuring error logging is accurate.",
+    "prerequisites": "Access to the Roost.ai platform with logging enabled.",
+    "stepsToPerform": "1. Navigate to Roost.ai platform.\n2. Trigger a test suite with a known failing JIRA API request.\n3. Monitor the logs for error entries.\n4. Validate the accuracy and detail of the logged error.",
+    "expectedResult": "Errors are logged with sufficient detail to diagnose the issue.",
+    "assumptions": "ASSUMPTION: Logging mechanism is active and configured correctly."
+  },
+  {
+    "type": "functional",
+    "title": "Retry Mechanism for JIRA API Requests",
+    "description": "Test the system's ability to retry JIRA API requests upon failure.",
+    "testId": "TC-012",
+    "testDescription": "A user triggers a test suite that initially fails to fetch JIRA details, prompting a retry.",
+    "prerequisites": "Configured retry mechanism for JIRA API requests on the Roost.ai platform.",
+    "stepsToPerform": "1. Navigate to Roost.ai platform.\n2. Trigger a test suite with a JIRA API request expected to fail initially.\n3. Observe the retry attempts.\n4. Validate successful completion after retries.",
+    "expectedResult": "System retries the JIRA API request and succeeds after initial failure.",
+    "assumptions": "ASSUMPTION: Retry logic is implemented and functional."
+  },
+  {
+    "type": "functional",
+    "title": "User Notification for JIRA API Failures",
+    "description": "Ensure users are notified when JIRA API requests fail.",
+    "testId": "TC-013",
+    "testDescription": "A user triggers a test suite and is notified of JIRA API request failures.",
+    "prerequisites": "Notification system configured on the Roost.ai platform.",
+    "stepsToPerform": "1. Navigate to Roost.ai platform.\n2. Trigger a test suite with a failing JIRA API request.\n3. Observe user notifications.\n4. Validate the clarity and timeliness of the notification.",
+    "expectedResult": "Users receive clear and timely notifications of JIRA API request failures.",
+    "assumptions": "ASSUMPTION: Notification system is active and configured correctly."
+  },
+  {
+    "type": "functional",
+    "title": "Security Check for JIRA API Credentials",
+    "description": "Verify that JIRA API credentials are securely handled and stored.",
+    "testId": "TC-014",
+    "testDescription": "A user inputs JIRA credentials and triggers a test suite, ensuring credentials are secure.",
+    "prerequisites": "Access to the Roost.ai platform with credential security measures in place.",
+    "stepsToPerform": "1. Navigate to Roost.ai platform.\n2. Input JIRA credentials.\n3. Trigger the test suite.\n4. Inspect the system for secure handling and storage of credentials.",
+    "expectedResult": "JIRA credentials are securely handled and stored, preventing unauthorized access.",
+    "assumptions": "ASSUMPTION: Security measures for credential handling are implemented."
+  },
+  {
+    "type": "functional",
+    "title": "Performance Testing for JIRA API Integration",
+    "description": "Assess the performance of the system when integrating with JIRA API.",
+    "testId": "TC-015",
+    "testDescription": "A user triggers multiple test suites to evaluate the performance of JIRA API integration.",
+    "prerequisites": "Access to the Roost.ai platform with performance monitoring tools.",
+    "stepsToPerform": "1. Navigate to Roost.ai platform.\n2. Trigger multiple test suites with JIRA API requests.\n3. Monitor system performance metrics.\n4. Analyze performance data for any bottlenecks.",
+    "expectedResult": "System maintains acceptable performance levels during JIRA API integration.",
+    "assumptions": "ASSUMPTION: Performance monitoring tools are available and configured."
+  }
+]

@@ -1,0 +1,15 @@
+Fetch JIRA Details with Valid Credentials
+Handle 404 Error on JIRA API Request
+Data Validation for JIRA Credentials
+Boundary Value Analysis for API Request Parameters
+Error Classification for HTTP Errors
+Data Integrity Check for JIRA Response Handling
+Error Logging for Failed JIRA API Requests
+Retry Mechanism for JIRA API Requests
+Security Check for JIRA API Credentials
+Performance Testing for JIRA API Integration
+UI Interaction for Triggering Test Suites
+UI Feedback for Error Handling
+Workflow State Transitions for Test Execution
+User Notification for JIRA API Failures
+State Transition Testing for Workflow Stages
