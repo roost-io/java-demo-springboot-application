@@ -1,0 +1,9 @@
+Handle API Response Codes
+Validate JIRA Credentials Before API Call
+Simulate Network Failure
+Simulate API Timeout
+Simulate API Rate Limiting
+UI Interaction for Triggering Test Suites
+UI Validation for Error Messages
+User Feedback for Invalid JIRA ID
+Authorization Check for Accessing JIRA Details
