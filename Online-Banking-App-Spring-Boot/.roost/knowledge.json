@@ -1,0 +1,702 @@
+{
+  "endpoints": [
+    {
+      "controller": "AccountController",
+      "basePath": "/account",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/account/create_account",
+          "function": "createAccount",
+          "requestBody": {
+            "type": "object",
+            "fields": [
+              "account_name",
+              "account_type"
+            ]
+          },
+          "response": "User accounts (array/object); error message on failure",
+          "authRequired": true
+        }
+      ]
+    },
+    {
+      "controller": "AppController",
+      "basePath": "/app",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/app/dashboard",
+          "function": "getDashboard",
+          "parameters": [],
+          "response": "{ userAccounts: Account[], totalBalance: number }",
+          "authRequired": true
+        },
+        {
+          "method": "GET",
+          "path": "/app/payment_history",
+          "function": "getPaymentHistory",
+          "parameters": [],
+          "response": "{ payment_history: PaymentHistory[] }",
+          "authRequired": true
+        },
+        {
+          "method": "GET",
+          "path": "/app/transaction_history",
+          "function": "getTransactiontHistory",
+          "parameters": [],
+          "response": "{ transaction_history: TransactionHistory[] }",
+          "authRequired": true
+        },
+        {
+          "method": "POST",
+          "path": "/app/account_transaction_history",
+          "function": "getAccountTransactiontHistory",
+          "requestBody": {
+            "type": "object",
+            "fields": [
+              "account_id"
+            ]
+          },
+          "response": "{ transaction_history: TransactionHistory[] }",
+          "authRequired": true
+        }
+      ]
+    },
+    {
+      "controller": "AuthController",
+      "basePath": "",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/login",
+          "function": "login",
+          "requestBody": {
+            "type": "object",
+            "fields": [
+              "email",
+              "password"
+            ]
+          },
+          "response": "{ message: string, access_token: string } | error message",
+          "authRequired": false
+        },
+        {
+          "method": "GET",
+          "path": "/logout",
+          "function": "logout",
+          "parameters": [],
+          "response": "Logout success message",
+          "authRequired": true
+        }
+      ]
+    },
+    {
+      "controller": "IndexController",
+      "basePath": "",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/",
+          "function": "getIndex",
+          "parameters": [],
+          "response": "Plain string message",
+          "authRequired": false
+        },
+        {
+          "method": "GET",
+          "path": "/verify",
+          "function": "getVerify",
+          "parameters": [
+            {
+              "name": "token",
+              "in": "query",
+              "required": true
+            },
+            {
+              "name": "code",
+              "in": "query",
+              "required": true
+            }
+          ],
+          "response": "{ message: string } | error message",
+          "authRequired": false
+        }
+      ]
+    },
+    {
+      "controller": "RegisterController",
+      "basePath": "",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/register",
+          "function": "registerUser",
+          "requestBody": {
+            "type": "object",
+            "fields": [
+              "user (User model in body)",
+              "confirm_password (query param)"
+            ]
+          },
+          "response": "{ message: string, user: User } | error messages",
+          "authRequired": false
+        }
+      ]
+    },
+    {
+      "controller": "TransactController",
+      "basePath": "/transact",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/transact/deposit",
+          "function": "deposit",
+          "requestBody": {
+            "type": "object",
+            "fields": [
+              "deposit_amount",
+              "account_id"
+            ]
+          },
+          "response": "{ message: string, accounts: Account[] } | error",
+          "authRequired": true
+        },
+        {
+          "method": "POST",
+          "path": "/transact/transfer",
+          "function": "transfer",
+          "requestBody": {
+            "type": "TransferRequest"
+          },
+          "response": "{ message: string, accounts: Account[] } | error",
+          "authRequired": true
+        },
+        {
+          "method": "POST",
+          "path": "/transact/withdraw",
+          "function": "transfer",
+          "requestBody": {
+            "type": "object",
+            "fields": [
+              "withdrawal_amount",
+              "account_id"
+            ]
+          },
+          "response": "{ message: string, accounts: Account[] } | error",
+          "authRequired": true
+        },
+        {
+          "method": "POST",
+          "path": "/transact/payment",
+          "function": "transfer",
+          "requestBody": {
+            "type": "PaymentRequest"
+          },
+          "response": "{ message: string, accounts: Account[] } | error",
+          "authRequired": true
+        }
+      ]
+    }
+  ],
+  "models": [
+    {
+      "name": "Account",
+      "fields": [
+        {
+          "name": "account_id",
+          "type": "int"
+        },
+        {
+          "name": "user_id",
+          "type": "int"
+        },
+        {
+          "name": "account_number",
+          "type": "string"
+        },
+        {
+          "name": "account_name",
+          "type": "string"
+        },
+        {
+          "name": "account_type",
+          "type": "string"
+        },
+        {
+          "name": "balance",
+          "type": "BigDecimal"
+        },
+        {
+          "name": "create_at",
+          "type": "LocalDateTime"
+        },
+        {
+          "name": "updated_at",
+          "type": "LocalDateTime"
+        }
+      ]
+    },
+    {
+      "name": "Payment",
+      "fields": [
+        {
+          "name": "payment_id",
+          "type": "int"
+        },
+        {
+          "name": "account_id",
+          "type": "int"
+        },
+        {
+          "name": "beneficiary",
+          "type": "string"
+        },
+        {
+          "name": "beneficiary_acc_no",
+          "type": "string"
+        },
+        {
+          "name": "amount",
+          "type": "double"
+        },
+        {
+          "name": "reference_no",
+          "type": "string"
+        },
+        {
+          "name": "status",
+          "type": "string"
+        },
+        {
+          "name": "reason_code",
+          "type": "string"
+        },
+        {
+          "name": "created_at",
+          "type": "LocalDateTime"
+        }
+      ]
+    },
+    {
+      "name": "PaymentHistory",
+      "fields": [
+        {
+          "name": "payment_id",
+          "type": "int"
+        },
+        {
+          "name": "account_id",
+          "type": "int"
+        },
+        {
+          "name": "beneficiary",
+          "type": "string"
+        },
+        {
+          "name": "beneficiary_acc_no",
+          "type": "string"
+        },
+        {
+          "name": "amount",
+          "type": "double"
+        },
+        {
+          "name": "reference_no",
+          "type": "string"
+        },
+        {
+          "name": "status",
+          "type": "string"
+        },
+        {
+          "name": "reason_code",
+          "type": "string"
+        },
+        {
+          "name": "created_at",
+          "type": "LocalDateTime"
+        }
+      ]
+    },
+    {
+      "name": "PaymentRequest",
+      "fields": [
+        {
+          "name": "beneficiary",
+          "type": "string"
+        },
+        {
+          "name": "account_number",
+          "type": "string"
+        },
+        {
+          "name": "account_id",
+          "type": "string"
+        },
+        {
+          "name": "reference",
+          "type": "string"
+        },
+        {
+          "name": "payment_amount",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Transact",
+      "fields": [
+        {
+          "name": "transaction_id",
+          "type": "int"
+        },
+        {
+          "name": "account_id",
+          "type": "int"
+        },
+        {
+          "name": "transaction_type",
+          "type": "string"
+        },
+        {
+          "name": "amount",
+          "type": "double"
+        },
+        {
+          "name": "source",
+          "type": "string"
+        },
+        {
+          "name": "status",
+          "type": "string"
+        },
+        {
+          "name": "reason_code",
+          "type": "string"
+        },
+        {
+          "name": "created_at",
+          "type": "LocalDateTime"
+        }
+      ]
+    },
+    {
+      "name": "TransactionHistory",
+      "fields": [
+        {
+          "name": "transaction_id",
+          "type": "int"
+        },
+        {
+          "name": "account_id",
+          "type": "int"
+        },
+        {
+          "name": "transaction_type",
+          "type": "string"
+        },
+        {
+          "name": "amount",
+          "type": "double"
+        },
+        {
+          "name": "source",
+          "type": "string"
+        },
+        {
+          "name": "status",
+          "type": "string"
+        },
+        {
+          "name": "reason_code",
+          "type": "string"
+        },
+        {
+          "name": "created_at",
+          "type": "LocalDateTime"
+        }
+      ]
+    },
+    {
+      "name": "TransferRequest",
+      "fields": [
+        {
+          "name": "sourceAccount",
+          "type": "string"
+        },
+        {
+          "name": "targetAccount",
+          "type": "string"
+        },
+        {
+          "name": "amount",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "fields": [
+        {
+          "name": "user_id",
+          "type": "string"
+        },
+        {
+          "name": "first_name",
+          "type": "string"
+        },
+        {
+          "name": "last_name",
+          "type": "string"
+        },
+        {
+          "name": "email",
+          "type": "string"
+        },
+        {
+          "name": "password",
+          "type": "string"
+        },
+        {
+          "name": "token",
+          "type": "string"
+        },
+        {
+          "name": "code",
+          "type": "string"
+        },
+        {
+          "name": "verified",
+          "type": "int"
+        },
+        {
+          "name": "verified_at",
+          "type": "LocalDate"
+        },
+        {
+          "name": "create_at",
+          "type": "LocalDateTime"
+        },
+        {
+          "name": "updated_at",
+          "type": "LocalDateTime"
+        }
+      ]
+    }
+  ],
+  "dependencies": [],
+  "businessFlows": [
+    {
+      "name": "User Registration",
+      "description": "Allows a new user to register an account in the banking application.",
+      "endpoints": [
+        {
+          "controller": "RegisterController",
+          "function": "registerUser",
+          "path": "/register",
+          "method": "POST"
+        }
+      ],
+      "models": [
+        "User"
+      ]
+    },
+    {
+      "name": "User Login",
+      "description": "Authenticates a user and initiates a logged-in session with JWT for subsequent operations.",
+      "endpoints": [
+        {
+          "controller": "AuthController",
+          "function": "login",
+          "path": "/login",
+          "method": "POST"
+        }
+      ],
+      "models": [
+        "User"
+      ]
+    },
+    {
+      "name": "User Logout",
+      "description": "Logs the current user out and invalidates their session.",
+      "endpoints": [
+        {
+          "controller": "AuthController",
+          "function": "logout",
+          "path": "/logout",
+          "method": "GET"
+        }
+      ],
+      "models": []
+    },
+    {
+      "name": "Account Creation",
+      "description": "Creates a new bank account for an authenticated user.",
+      "endpoints": [
+        {
+          "controller": "AccountController",
+          "function": "createAccount",
+          "path": "/account/create_account",
+          "method": "POST"
+        }
+      ],
+      "models": [
+        "Account",
+        "User"
+      ]
+    },
+    {
+      "name": "Dashboard & Balance Inquiry",
+      "description": "Fetches dashboard information, including all accounts and total balance for the user.",
+      "endpoints": [
+        {
+          "controller": "AppController",
+          "function": "getDashboard",
+          "path": "/app/dashboard",
+          "method": "GET"
+        }
+      ],
+      "models": [
+        "Account",
+        "User"
+      ]
+    },
+    {
+      "name": "Payment History",
+      "description": "Fetches the list of payment operations for the current user.",
+      "endpoints": [
+        {
+          "controller": "AppController",
+          "function": "getPaymentHistory",
+          "path": "/app/payment_history",
+          "method": "GET"
+        }
+      ],
+      "models": [
+        "PaymentHistory"
+      ]
+    },
+    {
+      "name": "Transaction History",
+      "description": "Fetches the list of transactions for the user, and for a specific account.",
+      "endpoints": [
+        {
+          "controller": "AppController",
+          "function": "getTransactiontHistory",
+          "path": "/app/transaction_history",
+          "method": "GET"
+        },
+        {
+          "controller": "AppController",
+          "function": "getAccountTransactiontHistory",
+          "path": "/app/account_transaction_history",
+          "method": "POST"
+        }
+      ],
+      "models": [
+        "TransactionHistory"
+      ]
+    },
+    {
+      "name": "Deposit Funds",
+      "description": "Deposits a specified amount of money into a user's account.",
+      "endpoints": [
+        {
+          "controller": "TransactController",
+          "function": "deposit",
+          "path": "/transact/deposit",
+          "method": "POST"
+        }
+      ],
+      "models": [
+        "Account"
+      ]
+    },
+    {
+      "name": "Money Transfer",
+      "description": "Transfers funds from one account to another.",
+      "endpoints": [
+        {
+          "controller": "TransactController",
+          "function": "transfer",
+          "path": "/transact/transfer",
+          "method": "POST"
+        }
+      ],
+      "models": [
+        "Account",
+        "TransferRequest"
+      ]
+    },
+    {
+      "name": "Withdraw Funds",
+      "description": "Withdraws a specified amount of money from a user's account.",
+      "endpoints": [
+        {
+          "controller": "TransactController",
+          "function": "transfer",
+          "path": "/transact/withdraw",
+          "method": "POST"
+        }
+      ],
+      "models": [
+        "Account"
+      ]
+    },
+    {
+      "name": "Make Payment",
+      "description": "Processes a payment from a user's account to a beneficiary.",
+      "endpoints": [
+        {
+          "controller": "TransactController",
+          "function": "transfer",
+          "path": "/transact/payment",
+          "method": "POST"
+        }
+      ],
+      "models": [
+        "PaymentRequest",
+        "Account"
+      ]
+    },
+    {
+      "name": "Email Verification",
+      "description": "Verifies a user's account using a token and verification code sent by email.",
+      "endpoints": [
+        {
+          "controller": "IndexController",
+          "function": "getVerify",
+          "path": "/verify",
+          "method": "GET"
+        }
+      ],
+      "models": [
+        "User"
+      ]
+    }
+  ],
+  "language": {
+    "language": "java"
+  },
+  "buildTool": {
+    "buildTool": "maven"
+  },
+  "framework": {
+    "framework": "spring-boot"
+  },
+  "projectStructure": {
+    "srcDirs": [
+      "src/main/java/com/beko/DemoBank_v1"
+    ],
+    "resourceDirs": [
+      "src/main/resources"
+    ],
+    "webDirs": [
+      "src/main/webapp/WEB-INF/jsp"
+    ],
+    "testDirs": [
+      "src/test/java/com/beko/DemoBank_v1"
+    ]
+  }
+}
