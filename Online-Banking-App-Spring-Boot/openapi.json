@@ -1,0 +1,492 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "DemoBank API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "API root",
+        "responses": {
+          "200": {
+            "description": "Root info",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "summary": "User login",
+        "requestBody": {
+          "description": "Login credentials",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": { "type": "string" },
+                  "password": { "type": "string" }
+                },
+                "required": ["username", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": { "type": "string" },
+                    "user": { "$ref": "#/components/schemas/User" }
+                  },
+                  "required": ["token", "user"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials"
+          }
+        }
+      }
+    },
+    "/logout": {
+      "get": {
+        "summary": "Logout",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Successfully logged out",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/register": {
+      "post": {
+        "summary": "User registration",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User registered",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Registration error"
+          }
+        }
+      }
+    },
+    "/account/create_account": {
+      "post": {
+        "summary": "Create account",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "account_type": { "type": "string" },
+                  "user_id": { "type": "integer" }
+                },
+                "required": ["account_type", "user_id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Account created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Account" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/dashboard": {
+      "get": {
+        "summary": "User dashboard",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Dashboard data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "accounts": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Account" }
+                    },
+                    "user": { "$ref": "#/components/schemas/User" }
+                  },
+                  "required": ["accounts", "user"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/payment_history": {
+      "get": {
+        "summary": "Payment history",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Array of payment history",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/PaymentHistory" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/transaction_history": {
+      "get": {
+        "summary": "Transaction history",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Array of transaction history",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/TransactionHistory" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/account_transaction_history": {
+      "post": {
+        "summary": "Account transaction history",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "account_id": { "type": "integer" }
+                },
+                "required": ["account_id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Array of transaction history for account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/TransactionHistory" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/transact/deposit": {
+      "post": {
+        "summary": "Make a deposit",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "account_id": { "type": "integer" },
+                  "amount": { "type": "number" }
+                },
+                "required": ["account_id", "amount"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Deposit success",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Transact" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/transact/transfer": {
+      "post": {
+        "summary": "Transfer between accounts",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/TransferRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Transfer success",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Transact" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/transact/withdraw": {
+      "post": {
+        "summary": "Withdraw from account",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "account_id": { "type": "integer" },
+                  "amount": { "type": "number" }
+                },
+                "required": ["account_id", "amount"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Withdrawal success",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Transact" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/transact/payment": {
+      "post": {
+        "summary": "Send payment",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PaymentRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Payment processed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "accounts": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Account" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Payment error"
+          }
+        }
+      }
+    },
+    "/verify": {
+      "get": {
+        "summary": "Verify a token and code",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "code",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Verification status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "verified": { "type": "boolean" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "user_id": { "type": "integer" },
+          "username": { "type": "string" },
+          "email": { "type": "string" },
+          "full_name": { "type": "string" },
+          "created_at": { "type": "string", "format": "date-time" }
+        },
+        "required": ["user_id", "username", "email", "full_name", "created_at"]
+      },
+      "Account": {
+        "type": "object",
+        "properties": {
+          "account_id": { "type": "integer" },
+          "user_id": { "type": "integer" },
+          "account_type": { "type": "string" },
+          "balance": { "type": "number" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "status": { "type": "string" }
+        },
+        "required": ["account_id", "user_id", "account_type", "balance", "created_at", "status"]
+      },
+      "PaymentRequest": {
+        "type": "object",
+        "properties": {
+          "from_account_id": { "type": "integer" },
+          "to_account_id": { "type": "integer" },
+          "amount": { "type": "number" },
+          "description": { "type": "string" }
+        },
+        "required": ["from_account_id", "to_account_id", "amount", "description"]
+      },
+      "PaymentHistory": {
+        "type": "object",
+        "properties": {
+          "payment_id": { "type": "integer" },
+          "from_account_id": { "type": "integer" },
+          "to_account_id": { "type": "integer" },
+          "amount": { "type": "number" },
+          "performed_at": { "type": "string", "format": "date-time" },
+          "status": { "type": "string" },
+          "description": { "type": "string" }
+        },
+        "required": ["payment_id", "from_account_id", "to_account_id", "amount", "performed_at", "status", "description"]
+      },
+      "TransactionHistory": {
+        "type": "object",
+        "properties": {
+          "transaction_id": { "type": "integer" },
+          "account_id": { "type": "integer" },
+          "transaction_type": { "type": "string" },
+          "amount": { "type": "number" },
+          "timestamp": { "type": "string", "format": "date-time" },
+          "description": { "type": "string" },
+          "status": { "type": "string" }
+        },
+        "required": ["transaction_id", "account_id", "transaction_type", "amount", "timestamp", "description", "status"]
+      },
+      "Transact": {
+        "type": "object",
+        "properties": {
+          "transact_id": { "type": "integer" },
+          "account_id": { "type": "integer" },
+          "amount": { "type": "number" },
+          "transaction_type": { "type": "string" },
+          "timestamp": { "type": "string", "format": "date-time" },
+          "status": { "type": "string" }
+        },
+        "required": ["transact_id", "account_id", "amount", "transaction_type", "timestamp", "status"]
+      },
+      "TransferRequest": {
+        "type": "object",
+        "properties": {
+          "from_account_id": { "type": "integer" },
+          "to_account_id": { "type": "integer" },
+          "amount": { "type": "number" }
+        },
+        "required": ["from_account_id", "to_account_id", "amount"]
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
