@@ -215,6 +215,8 @@ Execution:
 Validation:
   Confirms scalability and accurate aggregation for high-volume users.
 
+
+roost_feedback [20/04/2026, 11:57:14 AM]:add one more scenario for account holder
 */
 
 // ********RoostGPT********
@@ -278,7 +280,6 @@ public class AppControllerGetDashboardTest {
 		testUser.setUser_id("1001");
 		List<Account> dummyAccounts = new ArrayList<>();
 		Account acc = new Account();
-		// TODO: Set Account fields if needed
 		dummyAccounts.add(acc);
 		BigDecimal balance = new BigDecimal("1500.50");
 		Mockito.when(session.getAttribute("user")).thenReturn(testUser);
@@ -325,7 +326,6 @@ public class AppControllerGetDashboardTest {
 		testUser.setUser_id("3003");
 		List<Account> dummyAccounts = new ArrayList<>();
 		dummyAccounts.add(new Account());
-		// TODO: Set Account fields if needed
 		Mockito.when(session.getAttribute("user")).thenReturn(testUser);
 		Mockito.when(accountRepository.getUserAccountsById(3003)).thenReturn(dummyAccounts);
 		Mockito.when(accountRepository.getTotalBalance(3003)).thenReturn(null);
@@ -349,7 +349,6 @@ public class AppControllerGetDashboardTest {
 		List<Account> accounts = new ArrayList<>();
 		for (int i = 0; i < 4; i++)
 			accounts.add(new Account());
-		// TODO: Set Account fields if needed
 		BigDecimal balance = new BigDecimal("99999999.99");
 		Mockito.when(session.getAttribute("user")).thenReturn(testUser);
 		Mockito.when(accountRepository.getUserAccountsById(12345)).thenReturn(accounts);
@@ -364,7 +363,6 @@ public class AppControllerGetDashboardTest {
 		testUser.setUser_id("8080");
 		List<Account> accounts = new ArrayList<>();
 		accounts.add(new Account());
-		// TODO: Set Account fields if needed
 		BigDecimal negativeBalance = new BigDecimal("-250.00");
 		Mockito.when(session.getAttribute("user")).thenReturn(testUser);
 		Mockito.when(accountRepository.getUserAccountsById(8080)).thenReturn(accounts);
@@ -411,7 +409,6 @@ public class AppControllerGetDashboardTest {
 		testUser.setUser_id("3030");
 		List<Account> accounts = new ArrayList<>();
 		accounts.add(new Account());
-		// TODO: Set Account fields if needed
 		BigDecimal balance = BigDecimal.ZERO;
 		Mockito.when(session.getAttribute("user")).thenReturn(testUser);
 		Mockito.when(accountRepository.getUserAccountsById(3030)).thenReturn(accounts);
@@ -435,11 +432,28 @@ public class AppControllerGetDashboardTest {
 		List<Account> accounts = new ArrayList<>();
 		for (int i = 0; i < 250; i++)
 			accounts.add(new Account());
-		// TODO: Set Account fields if needed
 		BigDecimal balance = new BigDecimal("50000.00");
 		Mockito.when(session.getAttribute("user")).thenReturn(testUser);
 		Mockito.when(accountRepository.getUserAccountsById(5555)).thenReturn(accounts);
 		Mockito.when(accountRepository.getTotalBalance(5555)).thenReturn(balance);
+		ResponseEntity<?> response = appController.getDashboard(session);
+		assertEquals(ResponseEntity.ok(getExpectedResponse(accounts, balance)), response);
+	}
+
+	@Test
+	@Tag("valid")
+	public void testDashboardRetrievalWithMultipleAccountHolders() {
+		User anotherUser = new User();
+		anotherUser.setUser_id("1011");
+		List<Account> accounts = new ArrayList<>();
+		Account account1 = new Account();
+		Account account2 = new Account();
+		accounts.add(account1);
+		accounts.add(account2);
+		BigDecimal balance = new BigDecimal("3000.00");
+		Mockito.when(session.getAttribute("user")).thenReturn(anotherUser);
+		Mockito.when(accountRepository.getUserAccountsById(1011)).thenReturn(accounts);
+		Mockito.when(accountRepository.getTotalBalance(1011)).thenReturn(balance);
 		ResponseEntity<?> response = appController.getDashboard(session);
 		assertEquals(ResponseEntity.ok(getExpectedResponse(accounts, balance)), response);
 	}
