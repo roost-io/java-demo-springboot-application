@@ -1,0 +1,26 @@
+Successful fetch of an existing JIRA issue
+Fetch with non-existent or forbidden issue returns appropriate HTTP error
+Fetch with invalid authentication returns 401
+Fetch with missing JIRA_TOKEN environment variable fails with configuration error
+Concurrent fetch of the same existing JIRA ID should not produce false 404s
+Fetch with network timeout triggers timeout error and retry logic
+Fetch with malformed JIRA_BASE_URL results in connection error
+Credential expiry mid-suite is handled and suite continues
+Successful fetch log contains required fields for audit trail
+Fetches from different stacks use correct JIRA_BASE_URL
+Fetch with transient HTTP 500 triggers retry and eventual success
+Fetch using incorrect JIRA API version returns appropriate error
+Fetch with invalid JIRA ID formats fails gracefully
+Fetch with HTTP 429 rate limiting response is handled
+Systematic test of credential validity vs JIRA ID existence
+Error log format consistency for different error types
+Sequential fetches with credential rotation between requests
+HTTP redirect from JIRA API is followed correctly
+HTTP 200 with error body in response is treated as failure
+Fetch a newly created JIRA issue immediately to test eventual consistency
+Error log contains mandatory audit fields
+Fetch receives HTTP 204 No Content and logs error
+HTTP 200 response missing mandatory fields is treated as failure
+SSL certificate validation failure logs connection error
+Sequential fetches of different JIRA IDs are independent
+Extremely short timeout (1ms) causes immediate timeout error
